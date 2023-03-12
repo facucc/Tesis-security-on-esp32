@@ -9,6 +9,6 @@ set(EXTRA_COMPONENT_DIRS Components
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-project(prueba)
+project(tesis)
 
 
