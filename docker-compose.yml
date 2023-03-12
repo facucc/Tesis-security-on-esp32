@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  esp-idf:
+    build:
+      context: . 
+      dockerfile: Dockerfile.build
+      args:
+        ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+        TARGET: ${TARGET}
+        GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+    image: build
+    environment:
+      ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+      GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+    # devices:
+    #   - "/dev/ttyUSB0:/dev/ttyUSB0"
+    volumes:
+      - ${PWD}/:/app
+  runner:
+    build:
+      context: . 
+      dockerfile: Dockerfile.runner
+      args:
+        ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+        GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+    image: runner:v0.0.1
+    environment:
+      ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+      GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+
