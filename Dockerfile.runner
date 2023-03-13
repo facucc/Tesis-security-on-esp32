@@ -51,8 +51,8 @@ RUN curl -O -L https://github.com/actions/runner/releases/download/v${GITHUB_RUN
     && echo "3d357d4da3449a3b2c644dee1cc245436c09b6e5ece3e26a05bb3025010ea14d  ${RUNNER_BINARY}" | shasum -a 256 -c \
     && tar xzf ./${RUNNER_BINARY} \
     && rm -f ./${RUNNER_BINARY} \
-    chmod +x /actions-runner/config.sh \
-    chown -R runner:runner /actions-runner
+    && chmod +x /actions-runner/config.sh \
+    && chown -R runner:runner /actions-runner
 # Establecer el usuario del runner como usuario predeterminado
 USER runner
 
