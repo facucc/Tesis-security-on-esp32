@@ -37,10 +37,10 @@ WORKDIR /home/esp
 # Clone ESP-IDF repository
 RUN git clone -b ${ESP_IDF_VERSION} --recursive https://github.com/espressif/esp-idf.git esp-idf \
     && ./esp-idf/install.sh ${TARGET}
-
-# Add alias "get_idf"
-RUN echo "alias get_idf='. $IDF_PATH/export.sh'" >> ~/.bashrc \
-    && /bin/bash -c "source ~/.bashrc"
+    
+# Define function "get_idf" to set env variables
+RUN echo '#!/bin/sh \n . $IDF_PATH/export.sh' > /usr/local/bin/get_idf && \
+    chmod +x /usr/local/bin/get_idf
 
 # Crear un usuario para el runner
 RUN useradd -m runner && echo "runner:runner" | chpasswd && adduser runner sudo
