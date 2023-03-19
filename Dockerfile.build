@@ -7,7 +7,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV IDF_PATH /home/esp/esp-idf
 ENV PATH /home/esp/esp-idf/tools:$PATH
-
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
@@ -26,6 +25,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libusb-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN useradd -ms /bin/bash esp
+
+USER esp
 # Install ESP-IDF toolchain
 WORKDIR /home/esp
 
@@ -33,11 +35,7 @@ WORKDIR /home/esp
 RUN git clone -b ${ESP_IDF_VERSION} --recursive https://github.com/espressif/esp-idf.git esp-idf \
     && ./esp-idf/install.sh ${TARGET}
 
-# Add alias "get_idf"
-RUN echo "alias get_idf='. $IDF_PATH/export.sh'" >> ~/.bashrc \
-    && /bin/bash -c "source ~/.bashrc"
-
 WORKDIR /app
 
-ENTRYPOINT ["/bin/bash", "-ic", "get_idf && \"$@\"", "--"]
-CMD ["idf.py", "build"]
+#CMD [ "bash" ]
+ENTRYPOINT ["/bin/bash", "-ic", ". $IDF_PATH/export.sh && $@", "--"]

@@ -9,9 +9,8 @@ ARG RUNNER_REPOSITORY_URL
 ARG RUNNER_NAME="Runner-build"
 ARG GITHUB_ACCESS_TOKEN
 
-ENV IDF_PATH /home/esp/esp-idf
-ENV PATH /home/esp/esp-idf/tools:$PATH
-
+ENV IDF_PATH /home/runner/esp-idf
+ENV PATH /home/runner/esp-idf/tools:$PATH
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
@@ -31,37 +30,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ESP-IDF toolchain
-WORKDIR /home/esp
+RUN useradd -ms /bin/bash runner
 
+USER runner
+
+WORKDIR /home/runner/
 # Clone ESP-IDF repository
 RUN git clone -b ${ESP_IDF_VERSION} --recursive https://github.com/espressif/esp-idf.git esp-idf \
     && ./esp-idf/install.sh ${TARGET}
-    
-# Define function "get_idf" to set env variables
-RUN echo '#!/bin/sh \n . $IDF_PATH/export.sh' > /usr/local/bin/get_idf && \
-    chmod +x /usr/local/bin/get_idf
+   
+RUN mkdir actions-runner/ \
+    && curl -LO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/${RUNNER_BINARY} \
+    && tar xzf ${RUNNER_BINARY} -C actions-runner/ \
+    && rm -f ${RUNNER_BINARY}
 
-# Crear un usuario para el runner
-RUN useradd -m runner && echo "runner:runner" | chpasswd && adduser runner sudo
-
-WORKDIR /home/actions-runner
-
-RUN curl -O -L https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/${RUNNER_BINARY} \
-    && echo "3d357d4da3449a3b2c644dee1cc245436c09b6e5ece3e26a05bb3025010ea14d  ${RUNNER_BINARY}" | shasum -a 256 -c \
-    && tar xzf ./${RUNNER_BINARY} \
-    && rm -f ./${RUNNER_BINARY} \
-    && chmod +x /actions-runner/config.sh \
-    && chown -R runner:runner /actions-runner
-# Establecer el usuario del runner como usuario predeterminado
-USER runner
-
-RUN ./config.sh \
+RUN ./actions-runner/config.sh \
         --unattended \
         --url ${RUNNER_REPOSITORY_URL} \
         --token ${GITHUB_ACCESS_TOKEN} \
         --name ${RUNNER_NAME} \
+        --work "repository" \
         --replace  
 
-
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["bash", "-c", "./actions-runner/run.sh"]
