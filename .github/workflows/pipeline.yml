@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Compile project
         run: |
-          . $IDF_PATH && idf.py build                    
+          . $IDF_PATH/export.sh && idf.py build                    
       - name: "Flash to board"
         run: |
           idf.py -p /dev/ttyUSB0 flash
