@@ -7,14 +7,16 @@ services:
       dockerfile: Dockerfile.build
       args:
         ESP_IDF_VERSION: ${ESP_IDF_VERSION}
-        TARGET: ${TARGET}
-        GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+        TARGET: ${TARGET}        
     image: build
+    container_name: build_project
     environment:
       ESP_IDF_VERSION: ${ESP_IDF_VERSION}
-      GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
-    # devices:
-    #   - "/dev/ttyUSB0:/dev/ttyUSB0"
+      TARGET: ${TARGET}
+    command:     
+      - "idf.py build flash"
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
     volumes:
       - ${PWD}/:/app
   runner:
@@ -23,12 +25,17 @@ services:
       dockerfile: Dockerfile.runner
       args:
         ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+        TARGET: ${TARGET}
         GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
         RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
         GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
     image: runner:v0.0.1
+    container_name: runner
     environment:
       ESP_IDF_VERSION: ${ESP_IDF_VERSION}
+      TARGET: ${TARGET}
       GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
       RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
       GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
