@@ -5,9 +5,8 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'src/*'
-      - 'include/*'
-      - 'test/*'
+      - 'main/*'
+      - 'components/*'
   #pull_request:
   #  branches: [ "main" ]
 
@@ -23,5 +22,5 @@ jobs:
         uses: actions/checkout@v3
       - name: Compile project
         run: |
-          get_idf && idf.py build
+          pwd && ls -l
           
