@@ -4,7 +4,7 @@ services:
   esp-idf:
     build:
       context: . 
-      dockerfile: Dockerfile.build
+      dockerfile: Dockerfiles/Dockerfile.esp-idf
       args:
         ESP_IDF_VERSION: ${ESP_IDF_VERSION}
         TARGET: ${TARGET}        
@@ -21,8 +21,8 @@ services:
       - ${PWD}/:/app
   runner:
     build:
-      context: . 
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.runner
       args:
         RUNNER_NAME: ${RUNNER_NAME}
         WORKDIR: ${WORKDIR}
