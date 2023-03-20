@@ -9,6 +9,7 @@ ENV IDF_PATH /home/esp/esp-idf
 ENV PATH /home/esp/esp-idf/tools:$PATH
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        apt-utils \
         git \
         wget \
         flex \
@@ -35,7 +36,4 @@ WORKDIR /home/esp
 RUN git clone -b ${ESP_IDF_VERSION} --recursive https://github.com/espressif/esp-idf.git esp-idf \
     && ./esp-idf/install.sh ${TARGET}
 
-WORKDIR /app
-
-#CMD [ "bash" ]
-ENTRYPOINT ["/bin/bash", "-ic", ". $IDF_PATH/export.sh && $@", "--"]
+CMD [ "bash" ]
