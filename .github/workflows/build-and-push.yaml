@@ -58,4 +58,4 @@ jobs:
       #       L2: ${{ env.L1 }}
       #       GITHUB_ACCESS_TOKEN: ${{ secret.GITHUB_RUNNER_TOKEN }}
       #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/ESP-IDF:${{ env.ESP_IDF_VERSION }}
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/esp-idf:${{ env.ESP_IDF_VERSION }}
