@@ -28,7 +28,7 @@ jobs:
       - name: Build and push to Docker Hub
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:Dockerfiles"
-          dockerfile: Dockerfile.esp-idf          
+          context: .
+          dockerfile: ./Dockerfiles/Dockerfile.esp-idf        
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ env.ESP_IDF_VERSION }}
