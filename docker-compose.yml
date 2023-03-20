@@ -22,18 +22,18 @@ services:
   runner:
     build:
       context: . 
-      dockerfile: Dockerfile.runner
+      dockerfile: Dockerfile
       args:
-        ESP_IDF_VERSION: ${ESP_IDF_VERSION}
-        TARGET: ${TARGET}
+        RUNNER_NAME: ${RUNNER_NAME}
+        WORKDIR: ${WORKDIR}
         GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
         RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
         GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
-    image: runner:v0.0.1
+    image: runner:v0.0.2
     container_name: runner
     environment:
-      ESP_IDF_VERSION: ${ESP_IDF_VERSION}
-      TARGET: ${TARGET}
+      RUNNER_NAME: ${RUNNER_NAME}
+      WORKDIR: ${WORKDIR}
       GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
       RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
       GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
