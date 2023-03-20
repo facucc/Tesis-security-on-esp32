@@ -43,7 +43,7 @@ jobs:
             ESP_IDF_VERSION=${{ env.ESP_IDF_VERSION }}
             TARGET=${{ env.TARGET }}
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ESP-IDF:${{ env.ESP_IDF_VERSION }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/esp-idf:${{ env.ESP_IDF_VERSION }}
       # - name: Build and push Runner-Self-Hosted to Docker Hub
       #   uses: docker/build-push-action@v4
       #   with:
