@@ -1,0 +1,36 @@
+FROM facucc/esp-idf:v5.0.1
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG GITHUB_RUNNER_VERSION
+ARG RUNNER_BINARY="actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz"
+ARG RUNNER_REPOSITORY_URL
+ARG RUNNER_NAME
+ARG L1
+ARG L2
+ARG GITHUB_ACCESS_TOKEN
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+   
+USER esp
+
+WORKDIR /home/esp/
+
+RUN mkdir actions-runner/ \
+    && curl -LO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/${RUNNER_BINARY} \
+    && tar -xf ${RUNNER_BINARY} -C actions-runner/ \
+    && rm -f ${RUNNER_BINARY}
+
+RUN cd actions-runner/ \
+    && ./config.sh \
+        --unattended \
+        --url ${RUNNER_REPOSITORY_URL} \
+        --token ${GITHUB_ACCESS_TOKEN} \
+        --labels ${L1},${L2} \
+        --name ${RUNNER_NAME} \
+        --replace  
+
+CMD [ "bash" ]

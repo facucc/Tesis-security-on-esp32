@@ -44,18 +44,18 @@ jobs:
             TARGET=${{ env.TARGET }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/esp-idf:${{ env.ESP_IDF_VERSION }}
-      # - name: Build and push Runner-Self-Hosted to Docker Hub
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: ./Dockerfiles
-      #     file: ./Dockerfiles/Dockerfile.runner
-      #     build-args: |
-      #       GITHUB_RUNNER_VERSION: ${{ env.GITHUB_RUNNER_VERSION }}
-      #       RUNNER_REPOSITORY_URL: ${{ env.RUNNER_REPOSITORY_URL }}
-      #       RUNNER_NAME: ${{ env.RUNNER_NAME }}
-      #       WORKDIR: ${{ env.WORKDIR }}
-      #       L1: ${{ env.L1 }}
-      #       L2: ${{ env.L1 }}
-      #       GITHUB_ACCESS_TOKEN: ${{ secret.GITHUB_RUNNER_TOKEN }}
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/esp-idf:${{ env.ESP_IDF_VERSION }}
+      - name: Build and push Runner-Self-Hosted to Docker Hub
+        uses: docker/build-push-action@v4
+        with:
+          context: ./Dockerfiles
+          file: ./Dockerfiles/Dockerfile.runner
+          build-args: |
+            GITHUB_RUNNER_VERSION: ${{ env.GITHUB_RUNNER_VERSION }}
+            RUNNER_REPOSITORY_URL: ${{ env.RUNNER_REPOSITORY_URL }}
+            RUNNER_NAME: ${{ env.RUNNER_NAME }}
+            WORKDIR: ${{ env.WORKDIR }}
+            L1: ${{ env.L1 }}
+            L2: ${{ env.L1 }}
+            GITHUB_ACCESS_TOKEN: ${{ secret.GITHUB_RUNNER_TOKEN }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/runner:${{ env.GITHUB_RUNNER_VERSION }}
