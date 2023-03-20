@@ -7,7 +7,7 @@ on:
   push:
     paths:
     - 'Dockerfiles/*'
-    
+  workflow_dispatch:
 jobs:
   build_and_push:
     runs-on: ubuntu-20.04
@@ -27,8 +27,7 @@ jobs:
       
       - name: Build and push to Docker Hub
         uses: docker/build-push-action@v3
-        with:
-          context: .
+        with:          
           dockerfile: ./Dockerfiles/Dockerfile.esp-idf        
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ env.ESP_IDF_VERSION }}
