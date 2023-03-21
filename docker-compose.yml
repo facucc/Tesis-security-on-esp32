@@ -22,20 +22,18 @@ services:
   runner:
     build:
       context: .
-      dockerfile: Dockerfile.runner
+      dockerfile: ./Dockerfiles/Dockerfile.runner
       args:
-        RUNNER_NAME: ${RUNNER_NAME}
-        WORKDIR: ${WORKDIR}
         GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
+        RUNNER_NAME: ${RUNNER_NAME}
+        WORKDIR: ${WORKDIR}   
+        GITHUB_REPO: ${GITHUB_REPO}
+        GITHUB_OWNER: ${GITHUB_OWNER}   
         RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
         GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
-    image: runner:v0.0.2
+        RUNNER_LABELS: ${RUNNER_LABELS}
+
+    image: runner:v0.0.1
     container_name: runner
-    environment:
-      RUNNER_NAME: ${RUNNER_NAME}
-      WORKDIR: ${WORKDIR}
-      GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
-      RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
-      GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
