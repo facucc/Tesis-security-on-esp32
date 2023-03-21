@@ -5,14 +5,16 @@ ARG GITHUB_RUNNER_VERSION
 ARG RUNNER_BINARY="actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz"
 ARG RUNNER_REPOSITORY_URL
 ARG RUNNER_NAME
-ARG L1
-ARG L2
+ARG RUNNER_LABELS
 ARG GITHUB_ACCESS_TOKEN
+ARG GITHUB_OWNER
+ARG GITHUB_REPO
 
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
+        jq \
     && rm -rf /var/lib/apt/lists/*
    
 USER esp
@@ -24,12 +26,18 @@ RUN mkdir actions-runner/ \
     && tar -xf ${RUNNER_BINARY} -C actions-runner/ \
     && rm -f ${RUNNER_BINARY}
 
-RUN cd actions-runner/ \
+RUN RUNNER_TOKEN=$(curl -XPOST -fsSL \
+        -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runners/registration-token" \
+        | jq -r '.token') \
+    && cd actions-runner/ \
     && ./config.sh \
         --unattended \
         --url ${RUNNER_REPOSITORY_URL} \
-        --token ${GITHUB_ACCESS_TOKEN} \
-        --labels ${L1},${L2} \
+        --token ${RUNNER_TOKEN} \
+        --labels ${RUNNER_LABELS} \
+        --work ${WORKDIR} \
         --name ${RUNNER_NAME} \
         --replace  
 
