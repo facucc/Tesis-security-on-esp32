@@ -56,6 +56,6 @@ jobs:
             WORKDIR: ${{ env.WORKDIR }}
             L1: ${{ env.L1 }}
             L2: ${{ env.L1 }}
-            GITHUB_ACCESS_TOKEN: ${{ secret.GITHUB_RUNNER_TOKEN }}
+            GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_RUNNER_TOKEN }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/runner:${{ env.GITHUB_RUNNER_VERSION }}
