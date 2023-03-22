@@ -7,8 +7,7 @@ ARG RUNNER_REPOSITORY_URL
 ARG RUNNER_NAME
 ARG RUNNER_LABELS
 ARG GITHUB_ACCESS_TOKEN
-ARG GITHUB_OWNER
-ARG GITHUB_REPO
+ARG GITHUB_REPO_NAME
 
 USER root
 
@@ -29,7 +28,7 @@ RUN mkdir actions-runner/ \
 RUN RUNNER_TOKEN=$(curl -XPOST -fsSL \
         -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
         -H "Accept: application/vnd.github.v3+json" \
-        "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runners/registration-token" \
+        "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runners/registration-token" \
         | jq -r '.token') \
     && cd actions-runner/ \
     && ./config.sh \
@@ -37,7 +36,7 @@ RUN RUNNER_TOKEN=$(curl -XPOST -fsSL \
         --url ${RUNNER_REPOSITORY_URL} \
         --token ${RUNNER_TOKEN} \
         --labels ${RUNNER_LABELS} \
-        --work ${WORKDIR} \
+        --work ${GITHUB_REPO_NAME} \
         --name ${RUNNER_NAME} \
         --replace  
 

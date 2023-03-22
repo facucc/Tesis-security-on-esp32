@@ -25,10 +25,8 @@ services:
       dockerfile: ./Dockerfiles/Dockerfile.runner
       args:
         GITHUB_RUNNER_VERSION: ${GITHUB_RUNNER_VERSION}
-        RUNNER_NAME: ${RUNNER_NAME}
-        WORKDIR: ${WORKDIR}   
-        GITHUB_REPO: ${GITHUB_REPO}
-        GITHUB_OWNER: ${GITHUB_OWNER}   
+        RUNNER_NAME: ${RUNNER_NAME}       
+        GITHUB_REPO_NAME: ${GITHUB_REPO_NAME} 
         RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
         GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
         RUNNER_LABELS: ${RUNNER_LABELS}
