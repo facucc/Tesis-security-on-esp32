@@ -2,6 +2,8 @@ name: Build and Push to Docker-hub
 
 on:
   push:
+    branches:
+      - main
     paths:
     - 'Dockerfiles/*'
   workflow_dispatch:
