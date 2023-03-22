@@ -53,6 +53,6 @@ jobs:
             GITHUB_REPO_NAME=${{ github.repository }} 
             RUNNER_NAME=${{ env.RUNNER_NAME }}
             RUNNER_LABELS=${{ env.RUNNER_LABELS }}     
-            GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_ACCESS_TOKEN }}
+            GITHUB_ACCESS_TOKEN=${{ secrets.RUNNER_TOKEN }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/runner:${{ env.GITHUB_RUNNER_VERSION }}
