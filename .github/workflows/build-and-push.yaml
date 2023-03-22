@@ -49,11 +49,9 @@ jobs:
           file: ./Dockerfiles/Dockerfile.runner
           build-args: |
             GITHUB_RUNNER_VERSION=${{ env.GITHUB_RUNNER_VERSION }}
-            RUNNER_REPOSITORY_URL=${{ env.RUNNER_REPOSITORY_URL }}
-            GITHUB_OWNER=${{ github.repository_owner }}           
-            GITHUB_REPO=${{ github.repository#*/ }}
+            RUNNER_REPOSITORY_URL=${{ env.RUNNER_REPOSITORY_URL }}       
+            GITHUB_REPO_NAME=${{ github.repository }} 
             RUNNER_NAME=${{ env.RUNNER_NAME }}
-            WORKDIR=${{ github.repository }}
             RUNNER_LABELS=${{ env.RUNNER_LABELS }}     
             GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_ACCESS_TOKEN }}
           push: true
