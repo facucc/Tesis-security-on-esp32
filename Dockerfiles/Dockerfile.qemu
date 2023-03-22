@@ -1,0 +1,30 @@
+FROM facucc/runner:2.302.1
+
+ARG QEMU_REL=esp-develop-7.2.0-20230223
+ARG QEMU_BIN=esp-qemu-xtensa-softmmu-develop_7.2.0_20230223-x86_64-linux-gnu.tar.bz2
+
+USER root 
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libusb-1.0-0 \        
+        hwdata \
+        libglib2.0-0  \
+        libnuma1 \
+        libpixman-1-0 \
+        linux-tools-virtual \
+        libgcrypt20-dev \
+        libslirp0 \
+    && rm -rf /var/lib/apt/lists/*
+
+USER esp
+# Descarga la versión específica de QEMU que deseas instalar
+RUN mkdir qemu \
+    && wget https://github.com/espressif/qemu/releases/download/${QEMU_REL}/${QEMU_BIN} \
+    && tar -xvf ${QEMU_BIN} -C qemu/ --strip-components=1 \
+    && rm ${QEMU_BIN}
+
+ENV PATH=/home/esp/qemu/bin:${PATH}
+
+WORKDIR /app/
+
+ENTRYPOINT ["/bin/bash", "-ic"]
