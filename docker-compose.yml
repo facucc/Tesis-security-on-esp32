@@ -35,3 +35,17 @@ services:
     container_name: runner
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0"
+  qemu:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/Dockerfile.qemu
+    image: qemu:v0.0.1
+    container_name: qemu
+    command:
+     - |
+        . $PATH_IDF/export.sh
+        idf.py build
+        esptool.py --chip esp32 merge_bin --fill-flash-size 4MB -o build/flash_image.bin @flash_args
+        qemu-system-xtensa -nographic -machine esp32 -drive file=build/flash_image.bin,if=mtd,format=raw
+    volumes:
+      - ${PWD}/:/app    
