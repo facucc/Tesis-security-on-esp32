@@ -25,9 +25,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: set idf env
-        run: |
-          . $IDF_PATH/export.sh
       - name: Cache SonarQube packages
         uses: actions/cache@v1
         with:
@@ -51,6 +48,7 @@ jobs:
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
       - name: Run build-wrapper
         run: |
+          . $IDF_PATH/export.sh
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} idf.py build
       - name: Run sonar-scanner
         env:
