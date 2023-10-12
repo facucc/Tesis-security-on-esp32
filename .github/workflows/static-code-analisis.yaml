@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
-    name: Build
-    runs-on: facucc/esp-idf:v5.0.1
+    name: sonar-analisis
+    runs-on: sonar-runner
     env:
       SONAR_SCANNER_VERSION: 5.0.1 # Find the latest version in the "Windows" link on this page:
                                         # https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/

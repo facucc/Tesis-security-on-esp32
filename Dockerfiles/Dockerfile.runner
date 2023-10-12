@@ -14,6 +14,7 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         jq \
+        unzip \
     && rm -rf /var/lib/apt/lists/*
    
 USER esp
@@ -40,4 +41,4 @@ RUN RUNNER_TOKEN=$(curl -XPOST -fsSL \
         --name ${RUNNER_NAME} \
         --replace  
 
-CMD [ "bash" ]
+CMD [ "/home/esp/actions-runner/run.sh" ]
