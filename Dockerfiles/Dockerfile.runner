@@ -1,0 +1,44 @@
+FROM facucc/esp-idf:v5.0.1
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG GITHUB_RUNNER_VERSION
+ARG RUNNER_BINARY="actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz"
+ARG RUNNER_REPOSITORY_URL
+ARG RUNNER_NAME
+ARG RUNNER_LABELS
+ARG GITHUB_ACCESS_TOKEN
+ARG GITHUB_REPO_NAME
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        jq \
+        unzip \
+    && rm -rf /var/lib/apt/lists/*
+   
+USER esp
+
+WORKDIR /home/esp/
+
+RUN mkdir actions-runner/ \
+    && curl -LO https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/${RUNNER_BINARY} \
+    && tar -xf ${RUNNER_BINARY} -C actions-runner/ \
+    && rm -f ${RUNNER_BINARY}
+
+RUN RUNNER_TOKEN=$(curl -XPOST -fsSL \
+        -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${GITHUB_REPO_NAME}/actions/runners/registration-token" \
+        | jq -r '.token') \
+    && cd actions-runner/ \
+    && ./config.sh \
+        --unattended \
+        --url ${RUNNER_REPOSITORY_URL} \
+        --token ${RUNNER_TOKEN} \
+        --labels ${RUNNER_LABELS} \
+        --work ${GITHUB_REPO_NAME} \
+        --name ${RUNNER_NAME} \
+        --replace  
+
+CMD [ "/home/esp/actions-runner/run.sh" ]
