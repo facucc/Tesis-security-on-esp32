@@ -1,4 +1,5 @@
 idf_component_register(SRCS "main.c"
                     INCLUDE_DIRS "."
-                    REQUIRES "init"         
+                    REQUIRES "init"
+                             "mqtt_agent"         
                     )

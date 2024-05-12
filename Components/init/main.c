@@ -9,14 +9,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+//#include "backoff_algorithm.h"
+//#include "core_mqtt.h"
+#include <unistd.h>
 /* POSIX includes. */
 #include <unistd.h>
 
-#define WIFI_SSID ""
-#define WIFI_PASS ""
+#include "aws_headers.h"
 
-static const char *TAG = "TESIS";
+static const char *TAG = "INIT";
 
 static void usr_prv_init_hw(void)
 {
@@ -27,7 +28,7 @@ static void usr_prv_init_hw(void)
     esp_log_level_set("*", ESP_LOG_INFO);
     
     /* Initialize NVS partition */
-    esp_err_t ret = nvs_flash_init();
+    esp_err_t ret = nvs_flash_init(); 
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         /* NVS partition was truncated and needs to be erased */
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -39,8 +40,10 @@ static void usr_prv_init_hw(void)
 }
 void usr_start_app(void)
 {
+    
     usr_prv_init_hw();
-    usr_wifi_init_sta(WIFI_SSID, WIFI_PASS);
+    usr_wifi_init_sta();
+    start_wifi();
 
     while (1)
     {

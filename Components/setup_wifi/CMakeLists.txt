@@ -4,4 +4,5 @@ idf_component_register(SRCS "main.c"
                              "esp_event"
                              "esp_netif"
                              "esp_wifi"
+                             "key_value_store"
                     )

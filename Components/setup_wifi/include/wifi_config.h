@@ -16,7 +16,14 @@
 
 #define WIFI_CONNECTED_BIT BIT0 
 #define WIFI_FAIL_BIT      BIT1
+#define CONFIG_WIFI_SSID_BUFF_SIZE ( 32U )
+#define CONFIG_WIFI_PASS_BUFF_SIZE ( 64U )
 
-static EventGroupHandle_t wifi_event_group;
+#define SSID_KEY "SSID"
+#define PASSPHRASE_KEY "Passphrase"
 
-void usr_wifi_init_sta(char* wifi_ssid, char* wifi_password);
+static bool wifiConnected = false;
+static EventGroupHandle_t wifiEventGroup;
+
+void usr_wifi_init_sta( void );
+bool start_wifi( void );
