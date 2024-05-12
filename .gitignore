@@ -3,3 +3,4 @@ build
 .vscode/
 Certificates
 Libs
+nvs/*.bin
