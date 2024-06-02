@@ -1,6 +1,6 @@
 #include "init_app.h"
 #include "mqtt_agent.h"
-
+#include "ota_agent.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -22,38 +22,65 @@
  */
 #define INIT_TASK_PRIORITY ( 2 )
 
+
+#define STACK_SIZE_OTA 8000U
+
+StackType_t xStackOTA_Agent[ (STACK_SIZE_OTA)*4 ];
+StaticTask_t xTaskOTABuffer;
+
+#define STACK_SIZE_MQTT 8000U
+
+StackType_t xStackMQTT_Agent[ STACK_SIZE_MQTT *4 ];
+StaticTask_t xTaskMQTTBuffer;
+
+#define STACK_SIZE_INIT 1000U
+
+StackType_t xStackInit[ STACK_SIZE_INIT ];
+StaticTask_t xTaskINITBuffer;
+
 void app_main()
 {
-  BaseType_t xStatus = pdFAIL;
+  TaskHandle_t xHandle = NULL;
     
-  xStatus = xTaskCreate( (void *)usr_start_app,
+  xHandle = xTaskCreateStatic( (void *)usr_start_app,
                               "Init Task",
-                              INIT_TASK_STACK_SIZE,
+                              STACK_SIZE_INIT,
                               NULL,
                               INIT_TASK_PRIORITY,
-                              NULL );
+                              xStackInit,
+                              &xTaskINITBuffer );
 
-  if( xStatus != pdPASS )
+  if( xHandle == NULL )
   {
       ESP_LOGE( "main", "Failed to create Init task:");
   }
+
   vTaskDelay( pdMS_TO_TICKS(5000) );
-  xStatus = xTaskCreate( (void *) mqttAgenteTask,
+  xHandle = xTaskCreateStatic( (void *) mqttAgenteTask,
                               "mqtt agent Task",
-                              20000,
+                              STACK_SIZE_MQTT,
                               NULL,
                               3,
-                              NULL );
+                              xStackMQTT_Agent,
+                              &xTaskMQTTBuffer);
 
-  if( xStatus != pdPASS )
+  if( xHandle == NULL )
   {
       ESP_LOGE( "main","Failed to create mqtt agent Task:" );
   }
 
-  while (true)
+  vTaskDelay( pdMS_TO_TICKS(5000) );
+  xHandle = xTaskCreateStatic( (void *) otaAgenteTask,
+                              "ota agent Task",
+                              STACK_SIZE_OTA,
+                              NULL,
+                              3,
+                              xStackOTA_Agent,
+                              &xTaskOTABuffer);
+
+  if( xHandle == NULL )
   {
-    ESP_LOGI( "main","Tareas creadas" );
-    vTaskDelay( pdMS_TO_TICKS(5000) );
+      ESP_LOGE( "main","Failed to create otaAgenteTask:" );
   }
   
 }
