@@ -1,12 +1,13 @@
 /* CoreMQTT-Agent APIS for running MQTT in a multithreaded environment. */
 #include "freertos_agent_message.h"
 #include "freertos_command_pool.h"
-
+#include "queue_handler.h"
 
 /* CoreMQTT-Agent include. */
 #include "core_mqtt_agent.h"
 
 #include "mqtt_agent.h"
+#include "mqtt_common.h"
 
 /* Includes helpers for managing MQTT subscriptions. */
 #include "mqtt_subscription_manager.h"
@@ -55,7 +56,7 @@
  * @note Specified in bytes.  Must be large enough to hold the maximum
  * anticipated MQTT payload.
  */
-#define MQTT_AGENT_NETWORK_BUFFER_SIZE          ( 5000 )
+#define MQTT_AGENT_NETWORK_BUFFER_SIZE          ( 38000 )
 
 /**
  * @brief The length of the queue used to hold commands for the agent.
@@ -159,6 +160,7 @@ void mqttAgenteTask( void * parameters)
 
     prvLoadAWSSettings();    
     prvNetworkTransportInit(&xNetworkContext, &xTransport);
+    OtaInitEvent_FreeRTOS();
     prvMqttAgentInit(&xTransport);
 
     prvConnectToMQTTBroker(&xNetworkContext);
@@ -166,9 +168,8 @@ void mqttAgenteTask( void * parameters)
     prvMQTTAgentProcessing();
 
     while (1)
-    {
-        ESP_LOGI(TAG, "Hello world" );
-        vTaskDelay(5000/ portTICK_PERIOD_MS);
+    {        
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 static void prvMQTTAgentProcessing( )
@@ -181,8 +182,7 @@ static void prvMQTTAgentProcessing( )
          * will manage the MQTT protocol until such time that an error occurs,
          * which could be a disconnect.  If an error occurs the MQTT error code
          * is returned and the queue left uncleared so there can be an attempt to
-         * clean up and reconnect however the application writer prefers. */
-        ESP_LOGI(TAG,"Por procesar mensajes\n");
+         * clean up and reconnect however the application writer prefers. */        
         xMQTTStatus = MQTTAgent_CommandLoop( &xGlobalMqttAgentContext );
         /* Success is returned for application intiated disconnect or termination.
          * The socket will also be disconnected by the caller. */
@@ -334,7 +334,7 @@ static MQTTStatus_t prvMqttAgentInit( TransportInterface_t * xTransport )
                               prvGetTimeMs,
                               prvIncomingPublishCallback,
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
-                              pxGlobalSubscriptionList );
+                              (void *) pxGlobalSubscriptionList );
 
     assert(&xGlobalMqttAgentContext != NULL);
     assert(&xGlobalMqttAgentContext.mqttContext.getTime != NULL);
@@ -389,15 +389,17 @@ static void prvIncomingPublishCallback( MQTTAgentContext_t * pxMqttAgentContext,
     //topicLength = pxPublishInfo->topicNameLength;
     message = ( uint8_t * ) pxPublishInfo->pPayload;
     messageLength = pxPublishInfo->payloadLength;
-/*
-    LogInfo("TopicName: %s\n", topic);
-    LogInfo("Message: %s\n", message);
-    LogInfo("MessageLength: %ld\n", messageLength);
-*/
+
+    // ESP_LOGI(TAG,"TopicName: %s\n", topic);
+    // ESP_LOGI(TAG,"Message: %s\n", message);
+    // ESP_LOGI(TAG,"MessageLength: %ld\n", messageLength);
+
     /* Fan out the incoming publishes to the callbacks registered using
      * subscription manager. */
 
-   ESP_LOGI(TAG,"En la funcion incomming publish\n");
+    ESP_LOGI(TAG,"En la funcion incomming publish\n");
+
+    assert(( SubscriptionElement_t * ) pxMqttAgentContext->pIncomingCallbackContext != NULL);
 
     xPublishHandled = SubscriptionManager_HandleIncomingPublishes( ( SubscriptionElement_t * ) pxMqttAgentContext->pIncomingCallbackContext,
                                                                    pxPublishInfo );
@@ -414,43 +416,6 @@ static void prvIncomingPublishCallback( MQTTAgentContext_t * pxMqttAgentContext,
         ESP_LOGW(TAG, "WARN:  Received an unsolicited publish from topic %s\n", pxPublishInfo->pTopicName );
         *pcLocation = cOriginalChar;
     }
-}
-void SubscribeCommandCallback( MQTTAgentCommandContext_t * pxCommandContext, MQTTAgentReturnInfo_t * pxReturnInfo )
-{
-    bool xSubscriptionAdded = false;
-    MQTTAgentCommandContext_t * pxApplicationDefinedContext = ( MQTTAgentCommandContext_t * ) pxCommandContext;
-    MQTTAgentSubscribeArgs_t * pxSubscribeArgs = ( MQTTAgentSubscribeArgs_t * ) pxCommandContext->pArgs;
-    /* Store the result in the application defined context so the task that
-     * initiated the subscribe can check the operation's status.  Also send the
-     * status as the notification value.  These things are just done for
-     * demonstration purposes. */
-    pxApplicationDefinedContext->xReturnStatus = pxReturnInfo->returnCode;
-
-    /* Check if the subscribe operation is a success. Only one topic is
-     * subscribed by this demo. */
-    if( pxReturnInfo->returnCode == MQTTSuccess )
-    {
-        
-        /* Add subscription so that incoming publishes are routed to the application
-         * callback. */
-        xSubscriptionAdded = SubscriptionManager_AddSubscription( ( SubscriptionElement_t * ) xGlobalMqttAgentContext.pIncomingCallbackContext,
-                                              pxSubscribeArgs->pSubscribeInfo->pTopicFilter,
-                                              pxSubscribeArgs->pSubscribeInfo->topicFilterLength,
-                                              pxApplicationDefinedContext->pxIncomingPublishCallback,
-                                              NULL );
-
-        if( xSubscriptionAdded == false )
-        {
-            ESP_LOGI(TAG, "Failed to register an incoming publish callback for topic %.*s.", pxSubscribeArgs->pSubscribeInfo->topicFilterLength, pxSubscribeArgs->pSubscribeInfo->pTopicFilter );
-        }
-        else 
-            ESP_LOGI(TAG,"Successful subscription\n");
-        
-    }
-
-    xTaskNotify( pxCommandContext->xTaskToNotify,
-                 ( uint32_t ) ( pxReturnInfo->returnCode ),
-                 eSetValueWithOverwrite );
 }
 
 
@@ -472,4 +437,8 @@ static uint32_t prvGetTimeMs( void )
     ulTimeMs = ( uint32_t ) ( ulTimeMs - ulGlobalEntryTimeMs );
 
     return ulTimeMs;
+}
+char * GetThingName()
+{
+  return AWSConnectSettings.thingName; 
 }

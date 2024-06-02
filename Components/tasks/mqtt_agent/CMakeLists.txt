@@ -1,4 +1,5 @@
 idf_component_register(SRCS "src/main.c"
+                            "src/mqtt_common.c"
                     INCLUDE_DIRS "include"
                     REQUIRES "coreMQTT-Agent"
                              "backoffAlgorithm"
@@ -6,4 +7,5 @@ idf_component_register(SRCS "src/main.c"
                              "network_transport"
                              "key_value_store"
                              "logging"
+                             "queue_handler"
                     )

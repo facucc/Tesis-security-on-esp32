@@ -8,7 +8,7 @@
 #include "esp_log.h"
 
 void mqttAgenteTask( void * parameters);
-void SubscribeCommandCallback( MQTTAgentCommandContext_t * pxCommandContext, MQTTAgentReturnInfo_t * pxReturnInfo );
+char * GetThingName();
 /**
  * @brief Defines the structure to use as the command callback context in this
  * demo.
