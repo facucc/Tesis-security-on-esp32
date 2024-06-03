@@ -1,3 +1,8 @@
+#ifndef OTA_AGENT_H
+#define OTA_AGENT_H
+
+#include "queue_handler.h"
+
 void otaAgenteTask(void *parameters);
 
 /**
@@ -21,3 +26,6 @@ typedef enum OtaState
     OtaAgentStateStopped,
     OtaAgentStateAll
 } OtaState_t;
+
+
+#endif 
