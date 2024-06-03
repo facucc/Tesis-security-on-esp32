@@ -12,6 +12,7 @@
 /* Maximum size of the Job Document */
 #define JOB_DOC_SIZE 1024U
 
+#define CONFIG_HEADER_SIZE 2000
 /**
  * @ingroup ota_enum_types
  * @brief The OTA OS interface return status.
@@ -46,7 +47,7 @@ typedef enum OtaEvent
 
 typedef struct OtaDataEvent
 {
-    uint8_t data[ mqttFileDownloader_CONFIG_BLOCK_SIZE + 1000]; /*!< Buffer for storing event information. */
+    uint8_t data[ mqttFileDownloader_CONFIG_BLOCK_SIZE + CONFIG_HEADER_SIZE]; /*!< Buffer for storing event information. */
     size_t dataLength;                 /*!< Total space required for the event. */
     bool bufferUsed;                     /*!< Flag set when buffer is used otherwise cleared. */
 } OtaDataEvent_t;
@@ -77,7 +78,7 @@ typedef struct OtaEventMsg
  *
  * @return               OtaOsStatus_t, OtaOsSuccess if success , other error code on failure.
  */
-OtaOsStatus_t OtaInitEvent_FreeRTOS( );
+OtaOsStatus_t OtaInitEvent_FreeRTOS(const char * TAG);
 
 /**
  * @brief Sends an OTA event.
@@ -92,7 +93,7 @@ OtaOsStatus_t OtaInitEvent_FreeRTOS( );
  *
  * @return               OtaOsStatus_t, OtaOsSuccess if success , other error code on failure.
  */
-OtaOsStatus_t OtaSendEvent_FreeRTOS( const void * pEventMsg );
+OtaOsStatus_t OtaSendEvent_FreeRTOS( const void * pEventMsg, const char * TAG);
 
 /**
  * @brief Receive an OTA event.
@@ -107,7 +108,7 @@ OtaOsStatus_t OtaSendEvent_FreeRTOS( const void * pEventMsg );
  *
  * @return               OtaOsStatus_t, OtaOsSuccess if success , other error code on failure.
  */
-OtaOsStatus_t OtaReceiveEvent_FreeRTOS( void * pEventMsg );
+OtaOsStatus_t OtaReceiveEvent_FreeRTOS( void * pEventMsg, const char * TAG);
 
 /**
  * @brief Deinitialize the OTA Events mechanism.
@@ -119,7 +120,7 @@ OtaOsStatus_t OtaReceiveEvent_FreeRTOS( void * pEventMsg );
  *
  * @return               OtaOsStatus_t, OtaOsSuccess if success , other error code on failure.
  */
-OtaOsStatus_t OtaDeinitEvent_FreeRTOS( );
+OtaOsStatus_t OtaDeinitEvent_FreeRTOS(const char * TAG); 
 
 
 #endif /* ifndef _OTA_OS_FREERTOS_H_ */
