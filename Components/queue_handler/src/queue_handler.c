@@ -46,7 +46,7 @@ OtaOsStatus_t OtaInitEvent_FreeRTOS(const char * TAG)
         ESP_LOGI(TAG, "OTA Event Queue created.\n" );
     }
 
-    return otaOsStatus;
+    return xOtaOsStatus;
 }
 
 OtaOsStatus_t OtaSendEvent_FreeRTOS( const void * eventMsg, const char * TAG)
@@ -74,7 +74,7 @@ OtaOsStatus_t OtaSendEvent_FreeRTOS( const void * eventMsg, const char * TAG)
                        ( int ) xOtaOsStatus);
     }
 
-    return otaOsStatus;
+    return xOtaOsStatus;
 }
 
 OtaOsStatus_t OtaReceiveEvent_FreeRTOS( void * eventMsg, const char * TAG)
@@ -103,7 +103,7 @@ OtaOsStatus_t OtaReceiveEvent_FreeRTOS( void * eventMsg, const char * TAG)
                        ( int ) xOtaOsStatus);
     }
 
-    return otaOsStatus;
+    return xOtaOsStatus;
 }
 
 OtaOsStatus_t OtaDeinitEvent_FreeRTOS(const char * TAG)

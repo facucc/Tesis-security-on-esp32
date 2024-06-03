@@ -25,5 +25,4 @@
 static bool wifiConnected = false;
 static EventGroupHandle_t wifiEventGroup;
 
-void usr_wifi_init_sta( void );
-bool start_wifi( void );
+void initHardware();

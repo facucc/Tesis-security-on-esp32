@@ -1,4 +1,4 @@
-#include "wifi_config.h"
+#include "setup_config.h"
 #include "key_value_store.h"
 
 #define WIFI_NAMESPACE "wifi"
@@ -6,6 +6,19 @@
 static const char *TAG = "WIFI_STA";
 
 static int s_retry_num = 0;
+
+static void prvInitFlash( void );
+static void prvWifiInitSta( void );
+static bool prvStartWifi( void );
+
+
+void initHardware()
+{
+    prvInitFlash();
+    prvWifiInitSta();
+    prvStartWifi();
+
+}
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -63,9 +76,27 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     }
 
 }
+static void prvInitFlash(void)
+{
+    ESP_LOGI(TAG, "[APP] Startup..");
+    ESP_LOGI(TAG, "[APP] Free memory: %"PRIu32" bytes", esp_get_free_heap_size());
+    ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
 
+    esp_log_level_set("*", ESP_LOG_INFO);
+    
+    /* Initialize NVS partition */
+    esp_err_t ret = nvs_flash_init(); 
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        /* NVS partition was truncated and needs to be erased */
+        ESP_ERROR_CHECK(nvs_flash_erase());
+
+        /* Retry nvs_flash_init */
+        ESP_ERROR_CHECK(nvs_flash_init());
+    }
+    
+}
 /* Read for more information https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#esp32-wi-fi-station-general-scenario */
-void usr_wifi_init_sta( void )
+static void prvWifiInitSta( void )
 {
     wifi_init_config_t initConfig = WIFI_INIT_CONFIG_DEFAULT();
     esp_event_handler_instance_t instanceAnyId = NULL;
@@ -89,7 +120,7 @@ void usr_wifi_init_sta( void )
     ESP_ERROR_CHECK( esp_wifi_start() );    
 
 }
-bool start_wifi( void )
+static bool prvStartWifi( void )
 {
     bool success = true;
     wifi_config_t wifiConfig = { 0 };
@@ -109,7 +140,7 @@ bool start_wifi( void )
     nvs_close(handle);
     
     // Check if both items have been correctly retrieved
-    if(ssid == NULL || passphrase == NULL){
+    if(ssid == NULL || passphrase == NULL) {
         ESP_LOGE(TAG, "ssid or passphrase could not be loaded");
         return false;
     }

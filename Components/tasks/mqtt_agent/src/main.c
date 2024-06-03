@@ -18,6 +18,8 @@
 /* Transport interface include. */
 #include "network_transport.h"
 
+#include "setup_config.h"
+
 #include "key_value_store.h"
 
 #define AWS_NAMESPACE "aws"
@@ -134,18 +136,9 @@ static AWSConnectSettings_t AWSConnectSettings = {0};
  * @param[in] pPublishInfo MQTT packet information which stores details of the
  * job document.
  */
-static void prvIncomingPublishCallback( MQTTAgentContext_t * pxMqttAgentContext,
-                                        uint16_t usPacketId,
-                                        MQTTPublishInfo_t * pxPublishInfo );
-
+static void prvIncomingPublishCallback( MQTTAgentContext_t * pxMqttAgentContext, uint16_t usPacketId, MQTTPublishInfo_t * pxPublishInfo );
 static BaseType_t prvConnectToMQTTBroker( NetworkContext_t * pNetworkContext );
 static void prvNetworkTransportInit( NetworkContext_t * pNetworkContext, TransportInterface_t * xTransport );
-/**
- * @brief Initializes an MQTT Agent including transport interface and
- * network buffer.
- *
- * @return `MQTTSuccess` if the initialization succeeds, else `MQTTBadParameter`
- */
 static MQTTStatus_t prvMqttAgentInit( TransportInterface_t * xTransport );
 static MQTTStatus_t prvMQTTConnect( void ); 
 static uint32_t prvGetTimeMs( void );
@@ -158,6 +151,7 @@ void mqttAgenteTask( void * parameters)
     NetworkContext_t xNetworkContext = { 0 };
     TransportInterface_t xTransport  = { 0 };
 
+    initHardware();
     prvLoadAWSSettings();    
     prvNetworkTransportInit(&xNetworkContext, &xTransport);
     OtaInitEvent_FreeRTOS(TAG);
@@ -197,17 +191,17 @@ static void prvLoadAWSSettings()
     size_t itemLength = 0;
     ESP_LOGI(TAG, "Opening AWS Namespace");
 
-    nvs_handle handle;
-    ESP_ERROR_CHECK(nvs_open(AWS_NAMESPACE, NVS_READONLY, &handle) != ESP_OK);
+    nvs_handle xHandle;
+    ESP_ERROR_CHECK(nvs_open(AWS_NAMESPACE, NVS_READONLY, &xHandle) != ESP_OK);
     
     /* Agregar check de punteros NULL*/
-    AWSConnectSettings.certificate = nvs_load_value_if_exist(handle, CERTIFICATE_NVS_KEY, &itemLength);
-    AWSConnectSettings.privateKey  = nvs_load_value_if_exist(handle, PRIVATE_KEY_NVS_KEY, &itemLength);
-    AWSConnectSettings.rootCA      = nvs_load_value_if_exist(handle, ROOT_CA_NVS_KEY, &itemLength);
-    AWSConnectSettings.endpoint    = nvs_load_value_if_exist(handle, ENDPOINT_NVS_KEY, &itemLength);
-    AWSConnectSettings.thingName   = nvs_load_value_if_exist(handle, THING_NAME_NVS_KEY, &itemLength);
+    AWSConnectSettings.certificate = nvs_load_value_if_exist(xHandle, CERTIFICATE_NVS_KEY, &itemLength);
+    AWSConnectSettings.privateKey  = nvs_load_value_if_exist(xHandle, PRIVATE_KEY_NVS_KEY, &itemLength);
+    AWSConnectSettings.rootCA      = nvs_load_value_if_exist(xHandle, ROOT_CA_NVS_KEY, &itemLength);
+    AWSConnectSettings.endpoint    = nvs_load_value_if_exist(xHandle, ENDPOINT_NVS_KEY, &itemLength);
+    AWSConnectSettings.thingName   = nvs_load_value_if_exist(xHandle, THING_NAME_NVS_KEY, &itemLength);
 
-    nvs_close(handle);
+    nvs_close(xHandle);
 }
 
 static BaseType_t prvConnectToMQTTBroker( NetworkContext_t * pNetworkContext )
@@ -345,7 +339,7 @@ static MQTTStatus_t prvMqttAgentInit( TransportInterface_t * xTransport )
 static MQTTStatus_t prvMQTTConnect( void )
 {
     MQTTConnectInfo_t connectInfo = { 0 };
-    MQTTStatus_t mqttStatus = MQTTSuccess;
+    MQTTStatus_t xMQTTStatus = MQTTSuccess;
     bool sessionPresent = false;
 
     assert( &xGlobalMqttAgentContext != NULL );
@@ -361,13 +355,13 @@ static MQTTStatus_t prvMQTTConnect( void )
 
     assert(&xGlobalMqttAgentContext.mqttContext.getTime != NULL);
     
-    mqttStatus = MQTT_Connect( &( xGlobalMqttAgentContext.mqttContext ),
+    xMQTTStatus = MQTT_Connect( &( xGlobalMqttAgentContext.mqttContext ),
                                &connectInfo,
                                NULL,
                                5000U,
                                &sessionPresent );
 
-    return mqttStatus;
+    return xMQTTStatus;
 }
 
 /*-----------------------------------------------------------*/
