@@ -13,27 +13,19 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
-/**
- * @brief Stack size required for Init task.
- */
-#define INIT_TASK_STACK_SIZE ( 4000U )
-/**
- * @brief Priority required for Init task.
- */
-#define INIT_TASK_PRIORITY ( 2 )
 
+#define STACK_SIZE_OTA 6400U
+#define WORD 4
 
-#define STACK_SIZE_OTA 8000U
-
-StackType_t xStackOTA_Agent[ (STACK_SIZE_OTA)*4 ];
+StackType_t xStackOTA_Agent[ STACK_SIZE_OTA * WORD ];
 StaticTask_t xTaskOTABuffer;
 
-#define STACK_SIZE_MQTT 8000U
+#define STACK_SIZE_MQTT 3500U
 
-StackType_t xStackMQTT_Agent[ STACK_SIZE_MQTT *4 ];
+StackType_t xStackMQTT_Agent[ STACK_SIZE_MQTT * WORD ];
 StaticTask_t xTaskMQTTBuffer;
 
-#define STACK_SIZE_INIT 1000U
+#define STACK_SIZE_INIT 2500U
 
 StackType_t xStackInit[ STACK_SIZE_INIT ];
 StaticTask_t xTaskINITBuffer;
@@ -46,7 +38,7 @@ void app_main()
                               "Init Task",
                               STACK_SIZE_INIT,
                               NULL,
-                              INIT_TASK_PRIORITY,
+                              tskIDLE_PRIORITY,
                               xStackInit,
                               &xTaskINITBuffer );
 
@@ -60,7 +52,7 @@ void app_main()
                               "mqtt agent Task",
                               STACK_SIZE_MQTT,
                               NULL,
-                              3,
+                              tskIDLE_PRIORITY,
                               xStackMQTT_Agent,
                               &xTaskMQTTBuffer);
 
@@ -74,7 +66,7 @@ void app_main()
                               "ota agent Task",
                               STACK_SIZE_OTA,
                               NULL,
-                              3,
+                              tskIDLE_PRIORITY,
                               xStackOTA_Agent,
                               &xTaskOTABuffer);
 
