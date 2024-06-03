@@ -1,11 +1,11 @@
 /* CoreMQTT-Agent APIS for running MQTT in a multithreaded environment. */
 #include "freertos_agent_message.h"
 #include "freertos_command_pool.h"
-#include "queue_handler.h"
 
 /* CoreMQTT-Agent include. */
 #include "core_mqtt_agent.h"
 
+#include "queue_handler.h"
 #include "mqtt_agent.h"
 #include "mqtt_common.h"
 
@@ -56,7 +56,7 @@
  * @note Specified in bytes.  Must be large enough to hold the maximum
  * anticipated MQTT payload.
  */
-#define MQTT_AGENT_NETWORK_BUFFER_SIZE          ( 38000 )
+#define MQTT_AGENT_NETWORK_BUFFER_SIZE          ( 10000 )
 
 /**
  * @brief The length of the queue used to hold commands for the agent.
@@ -160,7 +160,7 @@ void mqttAgenteTask( void * parameters)
 
     prvLoadAWSSettings();    
     prvNetworkTransportInit(&xNetworkContext, &xTransport);
-    OtaInitEvent_FreeRTOS();
+    OtaInitEvent_FreeRTOS(TAG);
     prvMqttAgentInit(&xTransport);
 
     prvConnectToMQTTBroker(&xNetworkContext);
@@ -378,21 +378,6 @@ static void prvIncomingPublishCallback( MQTTAgentContext_t * pxMqttAgentContext,
 {
     bool xPublishHandled = false;
     char cOriginalChar, * pcLocation;
-    char * topic = NULL;
-    //size_t topicLength = 0U;
-    uint8_t * message = NULL;
-    size_t messageLength = 0U;
-    ( void ) usPacketId;
-
-    // assert( pxPublishInfo != NULL );
-    topic = ( char * ) pxPublishInfo->pTopicName;
-    //topicLength = pxPublishInfo->topicNameLength;
-    message = ( uint8_t * ) pxPublishInfo->pPayload;
-    messageLength = pxPublishInfo->payloadLength;
-
-    // ESP_LOGI(TAG,"TopicName: %s\n", topic);
-    // ESP_LOGI(TAG,"Message: %s\n", message);
-    // ESP_LOGI(TAG,"MessageLength: %ld\n", messageLength);
 
     /* Fan out the incoming publishes to the callbacks registered using
      * subscription manager. */
