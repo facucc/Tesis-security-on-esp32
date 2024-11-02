@@ -25,6 +25,13 @@ typedef enum TlsTransportStatus
     TLS_TRANSPORT_DISCONNECT_FAILURE = -8   /**< Failed to disconnect from server. */
 } TlsTransportStatus_t;
 
+typedef struct Timeouts
+{
+    uint16_t connectionTimeoutMs;
+    uint16_t sendTimeoutMs;
+    uint16_t recvTimeoutMs;
+} Timeouts_t;
+
 struct NetworkContext
 {
     SemaphoreHandle_t xTlsContextSemaphore;
@@ -55,6 +62,7 @@ struct NetworkContext
     * @brief Disable server name indication (SNI) for a TLS session.
     */
     BaseType_t disableSni;
+    bool is_plain_tcp;
 };
 typedef struct NetworkContext NetworkContext_t;
 
@@ -67,6 +75,8 @@ int32_t espTlsTransportSend( NetworkContext_t* pxNetworkContext,
 
 int32_t espTlsTransportRecv( NetworkContext_t* pxNetworkContext,
     void* pvData, size_t uxDataLen );
+
+const char* TlsTransportStatusToString(TlsTransportStatus_t status);
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
