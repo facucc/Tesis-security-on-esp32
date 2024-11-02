@@ -1,12 +1,22 @@
+#include "esp_err.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/projdefs.h"
 #include "freertos/semphr.h"
 #include <string.h>
+#include "sys/socket.h"
 #include "esp_log.h"
 #include "esp_tls.h"
 #include "network_transport.h"
 #include "sdkconfig.h"
 
-TlsTransportStatus_t xTlsConnect( NetworkContext_t* pxNetworkContext )
+#define NETWORK_TIMEOUT 5000
+
+#define TAG "network_transport"
+
+Timeouts_t timeouts = { .connectionTimeoutMs = NETWORK_TIMEOUT, .sendTimeoutMs = 10000, .recvTimeoutMs = 2000 };
+
+
+TlsTransportStatus_t xTlsConnect( NetworkContext_t* pxNetworkContext)
 {
     TlsTransportStatus_t xRet = TLS_TRANSPORT_SUCCESS;
 
@@ -21,7 +31,9 @@ TlsTransportStatus_t xTlsConnect( NetworkContext_t* pxNetworkContext )
         .ds_data = pxNetworkContext->ds_data,
         .clientkey_buf = ( const unsigned char* )( pxNetworkContext->pcClientKey ),
         .clientkey_bytes = pxNetworkContext->pcClientKeySize,
-        .timeout_ms = 1000,
+        .timeout_ms = NETWORK_TIMEOUT,
+        .non_block = false,
+        .is_plain_tcp = pxNetworkContext->is_plain_tcp
     };
 
     esp_tls_t* pxTls = esp_tls_init();
@@ -62,7 +74,6 @@ TlsTransportStatus_t xTlsDisconnect( NetworkContext_t* pxNetworkContext )
 
     return xRet;
 }
-
 int32_t espTlsTransportSend(NetworkContext_t* pxNetworkContext,
     const void* pvData, size_t uxDataLen)
 {
@@ -116,4 +127,28 @@ int32_t espTlsTransportRecv(NetworkContext_t* pxNetworkContext,
         return -1;
     }
     return lBytesRead;
+}
+const char* TlsTransportStatusToString(TlsTransportStatus_t status)
+{
+    switch (status)
+    {
+        case TLS_TRANSPORT_SUCCESS:
+            return "TLS_TRANSPORT_SUCCESS: Communication established successfully.";
+        case TLS_TRANSPORT_INVALID_PARAMETER:
+            return "TLS_TRANSPORT_INVALID_PARAMETER: At least one parameter was invalid.";
+        case TLS_TRANSPORT_INSUFFICIENT_MEMORY:
+            return "TLS_TRANSPORT_INSUFFICIENT_MEMORY: Insufficient memory required to establish connection.";
+        case TLS_TRANSPORT_INVALID_CREDENTIALS:
+            return "TLS_TRANSPORT_INVALID_CREDENTIALS: Provided credentials were invalid.";
+        case TLS_TRANSPORT_HANDSHAKE_FAILED:
+            return "TLS_TRANSPORT_HANDSHAKE_FAILED: Performing TLS handshake with server failed.";
+        case TLS_TRANSPORT_INTERNAL_ERROR:
+            return "TLS_TRANSPORT_INTERNAL_ERROR: A call to a system API resulted in an internal error.";
+        case TLS_TRANSPORT_CONNECT_FAILURE:
+            return "TLS_TRANSPORT_CONNECT_FAILURE: Initial connection to the server failed.";
+        case TLS_TRANSPORT_DISCONNECT_FAILURE:
+            return "TLS_TRANSPORT_DISCONNECT_FAILURE: Failed to disconnect from server.";
+        default:
+            return "UNKNOWN_STATUS: Unknown TLS transport status.";
+    }
 }

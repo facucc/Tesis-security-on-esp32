@@ -1,0 +1,18 @@
+key,type,encoding,value
+wifi,namespace,,
+# Configure these:
+SSID,data,string,""
+Passphrase,data,string,""
+google,namespace,,
+RootCA,file,string,./Certificates/GoogleRootCA1.pem
+Certificate,file,string,./Certificates/certificate.pem
+aws,namespace,,
+# Configure these:
+Endpoint,data,string,"-ats.iot.us-east-1.amazonaws.com"
+RootCA,file,string,./Certificates/AmazonRootCA1.pem
+ThingName,data,string,"test"
+OnBoarding,data,i8,0
+ClaimPrivateKey,file,string,./Certificates/claim-private-key.pem
+ClaimCert,file,string,./Certificates/claim-certificate.pem
+PrivateKey,file,string,./Certificates/private-key.pem
+Certificate,file,string,./Certificates/certificate.pem

@@ -1,4 +1,4 @@
-#include "wifi_config.h"
+#include "setup_config.h"
 #include "key_value_store.h"
 
 #define WIFI_NAMESPACE "wifi"
@@ -7,8 +7,24 @@ static const char *TAG = "WIFI_STA";
 
 static int s_retry_num = 0;
 
+static void prvInitFlash( void );
+static void prvWifiInitSta( void );
+static bool prvStartWifi( void );
+
+
+void initHardware()
+{
+    prvInitFlash();
+    prvWifiInitSta();
+    prvStartWifi();
+
+}
+
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
+    TaskHandle_t xTaskCurrent = xTaskGetCurrentTaskHandle();
+    ESP_LOGI( TAG, "Task executing %s", pcTaskGetName(xTaskCurrent) );
+
     if( event_base == WIFI_EVENT )
     {
         switch( event_id )
@@ -19,10 +35,20 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
             case WIFI_EVENT_STA_DISCONNECTED:
                 ESP_LOGI( TAG, "Station disconnected event" );
                 wifiConnected = false;
-                if (s_retry_num < ESP_MAXIMUM_RETRY){
+                /*
+                while (1)
+                {
+                    ESP_LOGI(TAG, "retry to connect to the AP");
+                    esp_wifi_connect();
+                    vTaskDelay(pdMS_TO_TICKS(5000));
+                }
+                */
+                if (s_retry_num < ESP_MAXIMUM_RETRY)
+                {
                     esp_wifi_connect();
                     s_retry_num++;
-                    ESP_LOGI(TAG, "retry to connect to the AP");
+                    vTaskDelay(pdMS_TO_TICKS(5000));
+                    
                 } else {
                     xEventGroupSetBits( wifiEventGroup, WIFI_FAIL_BIT );
                     ESP_LOGI(TAG, "WIFI_FAIL_BIT was successfully set");
@@ -63,9 +89,27 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     }
 
 }
+static void prvInitFlash(void)
+{
+    ESP_LOGI(TAG, "[APP] Startup..");
+    ESP_LOGI(TAG, "[APP] Free memory: %"PRIu32" bytes", esp_get_free_heap_size());
+    ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
 
+    esp_log_level_set("*", ESP_LOG_INFO);
+    
+    /* Initialize NVS partition */
+    esp_err_t ret = nvs_flash_init(); 
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        /* NVS partition was truncated and needs to be erased */
+        ESP_ERROR_CHECK(nvs_flash_erase());
+
+        /* Retry nvs_flash_init */
+        ESP_ERROR_CHECK(nvs_flash_init());
+    }
+    
+}
 /* Read for more information https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#esp32-wi-fi-station-general-scenario */
-void usr_wifi_init_sta( void )
+static void prvWifiInitSta( void )
 {
     wifi_init_config_t initConfig = WIFI_INIT_CONFIG_DEFAULT();
     esp_event_handler_instance_t instanceAnyId = NULL;
@@ -79,6 +123,8 @@ void usr_wifi_init_sta( void )
 
     esp_netif_create_default_wifi_sta();
 
+
+
     ESP_ERROR_CHECK(esp_wifi_init(&initConfig));
 
 
@@ -89,7 +135,7 @@ void usr_wifi_init_sta( void )
     ESP_ERROR_CHECK( esp_wifi_start() );    
 
 }
-bool start_wifi( void )
+static bool prvStartWifi( void )
 {
     bool success = true;
     wifi_config_t wifiConfig = { 0 };
@@ -97,19 +143,21 @@ bool start_wifi( void )
     size_t ssidLength = 0;
     size_t passphraseLength = 0;
     // Open the "wifi" namespace in read-only mode
+    
     nvs_handle handle;
+
     ESP_ERROR_CHECK(nvs_open(WIFI_NAMESPACE, NVS_READONLY, &handle) != ESP_OK);
 
     // Load the private key & certificate
     ESP_LOGI(TAG, "Loading wifi");
 
-    char * ssid       = nvs_load_value_if_exist(handle, SSID_KEY, &ssidLength);
-    char * passphrase = nvs_load_value_if_exist(handle, PASSPHRASE_KEY, &passphraseLength);
+    char * ssid       = load_value_from_nvs(handle, SSID_KEY, &ssidLength);
+    char * passphrase = load_value_from_nvs(handle, PASSPHRASE_KEY, &passphraseLength);
     // We're done with NVS
     nvs_close(handle);
     
     // Check if both items have been correctly retrieved
-    if(ssid == NULL || passphrase == NULL){
+    if(ssid == NULL || passphrase == NULL) {
         ESP_LOGE(TAG, "ssid or passphrase could not be loaded");
         return false;
     }

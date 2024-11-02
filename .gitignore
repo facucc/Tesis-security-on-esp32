@@ -3,3 +3,7 @@ build
 .vscode/
 Certificates
 Libs
+*.bin
+signing
+managed_components
+.history

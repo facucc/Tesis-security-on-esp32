@@ -13,12 +13,11 @@ set(EXTRA_COMPONENT_DIRS Components
 
 set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/Libs")
 
-set(LIBS_DIR "${FETCHCONTENT_BASE_DIR}" CACHE STRING "Ruta de la carpeta Libs")
-
 FetchContent_Declare(
   coreMQTT-Agent
   GIT_REPOSITORY https://github.com/FreeRTOS/coreMQTT-Agent.git
-  GIT_TAG v1.2.0
+  #GIT_TAG v1.2.0
+  GIT_TAG 498e283825dac3d45fa2f5cd47a061771896bd12
   SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/coreMQTT-Agent) 
 
 FetchContent_Declare(
@@ -26,13 +25,35 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/FreeRTOS/backoffAlgorithm.git
   GIT_TAG v1.4.0
   SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/backoffAlgorithm) 
+FetchContent_Declare(
+  coreJSON
+  GIT_REPOSITORY https://github.com/FreeRTOS/coreJSON.git
+  GIT_TAG v3.3.0
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/coreJSON)
+FetchContent_Declare(
+  tinycbor
+  GIT_REPOSITORY https://github.com/intel/tinycbor.git
+  GIT_TAG 26c63e3d5977f77a6483edde4519489254670375
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/tinycbor)  
+FetchContent_Declare(
+  jobs
+  GIT_REPOSITORY https://github.com/aws/Jobs-for-AWS-IoT-embedded-sdk.git
+  GIT_TAG 02e343e93e167dd8e8795e8e4f708ae1e07a2400
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/jobs) 
 
-FetchContent_MakeAvailable(coreMQTT-Agent backoffAlgorithm)
-
+FetchContent_Declare(
+  iot-core-mqtt-file-downloader
+  GIT_REPOSITORY https://github.com/aws/aws-iot-core-mqtt-file-streams-embedded-c.git
+  GIT_TAG v1.0.0
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/iot-core-mqtt-file-downloader)
+  
+FetchContent_Declare(
+  fleet-provisioning
+  GIT_REPOSITORY https://github.com/aws/Fleet-Provisioning-for-AWS-IoT-embedded-sdk
+  GIT_TAG v1.2.1
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/fleet-provisioning) 
+  
+FetchContent_MakeAvailable(coreMQTT-Agent backoffAlgorithm coreJSON tinycbor jobs iot-core-mqtt-file-downloader fleet-provisioning)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-
-set(BACKOFF_ALGORITHM_PATH ${backoffalgorithm_SOURCE_DIR} CACHE STRING "")
-message(STATUS "LIBS_DIR: ${LIBS_DIR}")
-
 project(tesis)

@@ -59,11 +59,8 @@ static volatile uint8_t initStatus = QUEUE_NOT_INITIALIZED;
 
 void Agent_InitializePool( void )
 {
-    size_t i;
-    MQTTAgentCommand_t * pCommand;
     static uint8_t staticQueueStorageArea[ MQTT_COMMAND_CONTEXTS_POOL_SIZE * sizeof( MQTTAgentCommand_t * ) ];
     static StaticQueue_t staticQueueStructure;
-    bool commandAdded = false;
 
     if( initStatus == QUEUE_NOT_INITIALIZED )
     {
@@ -75,12 +72,12 @@ void Agent_InitializePool( void )
         configASSERT( commandStructMessageCtx.queue );
 
         /* Populate the queue. */
-        for( i = 0; i < MQTT_COMMAND_CONTEXTS_POOL_SIZE; i++ )
+        for(size_t i = 0; i < MQTT_COMMAND_CONTEXTS_POOL_SIZE; i++ )
         {
             /* Store the address as a variable. */
-            pCommand = &commandStructurePool[ i ];
+            MQTTAgentCommand_t *pCommand = &commandStructurePool[ i ];
             /* Send the pointer to the queue. */
-            commandAdded = Agent_MessageSend( &commandStructMessageCtx, &pCommand, 0U );
+            bool commandAdded = Agent_MessageSend( &commandStructMessageCtx, &pCommand, 0U );
             configASSERT( commandAdded );
         }
 
@@ -105,8 +102,7 @@ MQTTAgentCommand_t * Agent_GetCommand( uint32_t blockTimeMs )
     {
         ESP_LOGE(TAG, "No command structure available.");
     } else {
-        ESP_LOGI(TAG, "Removed Command Context %d from pool",
-                    ( int ) ( structToUse - commandStructurePool ));
+        //ESP_LOGI(TAG, "Removed Command Context %d from pool", ( int ) ( structToUse - commandStructurePool ));
     }
 
     return structToUse;
@@ -129,8 +125,7 @@ bool Agent_ReleaseCommand( MQTTAgentCommand_t * pCommandToRelease )
         /* The send should not fail as the queue was created to hold every command
          * in the pool. */
         configASSERT( structReturned );
-        ESP_LOGI(TAG,"Returned Command Context %d to pool",
-                    ( int ) ( pCommandToRelease - commandStructurePool ));
+        //ESP_LOGI(TAG,"Returned Command Context %d to pool", ( int ) ( pCommandToRelease - commandStructurePool ));
     }
 
     return structReturned;

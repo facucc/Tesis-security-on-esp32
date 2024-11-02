@@ -7,8 +7,6 @@
 #include "esp_system.h"
 #include "esp_log.h"
 
-void mqttAgenteTask( void * parameters);
-void SubscribeCommandCallback( MQTTAgentCommandContext_t * pxCommandContext, MQTTAgentReturnInfo_t * pxReturnInfo );
 /**
  * @brief Defines the structure to use as the command callback context in this
  * demo.
@@ -22,10 +20,15 @@ struct MQTTAgentCommandContext
     void * pArgs;
 };
 
-typedef struct AWSConnectSettings { 
+typedef struct AWSConnectSettings {
     char * certificate;
     char * privateKey;
+    char * newCertificate;
+    char * newPrivateKey;
     char * rootCA;
     char * endpoint;
     char * thingName;
 } AWSConnectSettings_t;
+
+void mqttAgentTask( void * parameters);
+char * GetThingName();
