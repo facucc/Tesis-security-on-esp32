@@ -36,7 +36,7 @@
  * simultaneously in a list.
  */
 #ifndef SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS
-    #define SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS    2U
+    #define SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS    4U
 #endif
 
 /**

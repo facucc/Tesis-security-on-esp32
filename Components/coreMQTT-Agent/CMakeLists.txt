@@ -33,8 +33,6 @@ idf_component_register(
     INCLUDE_DIRS
         ${COREMQTT_AGENT_INCLUDE_DIRS}
         ${MQTT_INCLUDE_PUBLIC_DIRS}
-    REQUIRES
-          logging
 )
 
 # set(MQTT_CONFIG_DIR ${CMAKE_CURRENT_LIST_DIR}/config)

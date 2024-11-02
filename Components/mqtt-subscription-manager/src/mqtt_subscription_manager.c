@@ -19,7 +19,6 @@ bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscription
                                           IncomingPubCallback_t pxIncomingPublishCallback,
                                           void * pvIncomingPublishCallbackContext )
 {
-    int32_t lIndex = 0;
     size_t xAvailableIndex = SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS;
     bool xReturnStatus = false;
 
@@ -39,7 +38,7 @@ bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscription
     {
         /* Start at end of array, so that we will insert at the first available index.
          * Scans backwards to find duplicates. */
-        for( lIndex = ( int32_t ) SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS - 1; lIndex >= 0; lIndex-- )
+        for(int32_t lIndex = ( int32_t ) SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS - 1; lIndex >= 0; lIndex-- )
         {
             if( pxSubscriptionList[ lIndex ].usFilterStringLength == 0 )
             {
@@ -62,10 +61,12 @@ bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscription
 
         if( xAvailableIndex < SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS )
         {
+            
             pxSubscriptionList[ xAvailableIndex ].pcSubscriptionFilterString = pcTopicFilterString;
             pxSubscriptionList[ xAvailableIndex ].usFilterStringLength = usTopicFilterLength;
             pxSubscriptionList[ xAvailableIndex ].pxIncomingPublishCallback = pxIncomingPublishCallback;
             pxSubscriptionList[ xAvailableIndex ].pvIncomingPublishCallbackContext = pvIncomingPublishCallbackContext;
+            ESP_LOGI(TAG, "Topic added to subscribe list %s", pxSubscriptionList[ xAvailableIndex ].pcSubscriptionFilterString);
             xReturnStatus = true;
         }
     }
@@ -79,8 +80,6 @@ void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscript
                                              const char * pcTopicFilterString,
                                              uint16_t usTopicFilterLength )
 {
-    int32_t lIndex = 0;
-
     if( ( pxSubscriptionList == NULL ) ||
         ( pcTopicFilterString == NULL ) ||
         ( usTopicFilterLength == 0U ) )
@@ -89,7 +88,7 @@ void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscript
     }
     else
     {
-        for( lIndex = 0; lIndex < SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS; lIndex++ )
+        for(int32_t lIndex = 0; lIndex < SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS; lIndex++ )
         {
             if( pxSubscriptionList[ lIndex ].usFilterStringLength == usTopicFilterLength )
             {
@@ -107,7 +106,6 @@ void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscript
 bool SubscriptionManager_HandleIncomingPublishes( SubscriptionElement_t * pxSubscriptionList,
                                                   MQTTPublishInfo_t * pxPublishInfo )
 {
-    int32_t lIndex = 0;
     bool isMatched = false, publishHandled = false;
     
     if( ( pxSubscriptionList == NULL ) ||
@@ -118,7 +116,7 @@ bool SubscriptionManager_HandleIncomingPublishes( SubscriptionElement_t * pxSubs
 
     else
     {
-        for( lIndex = 0; lIndex < SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS; lIndex++ )
+        for(int32_t lIndex = 0; lIndex < SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS; lIndex++ )
         {
             if( pxSubscriptionList[ lIndex ].usFilterStringLength > 0 )
             {
@@ -130,11 +128,12 @@ bool SubscriptionManager_HandleIncomingPublishes( SubscriptionElement_t * pxSubs
                 
 
                 if( isMatched == true )
-                {
+                {                    
                     pxSubscriptionList[ lIndex ].pxIncomingPublishCallback( pxSubscriptionList[ lIndex ].pvIncomingPublishCallbackContext,
                                                                             pxPublishInfo );
 
                     publishHandled = true;
+                    break;
                 }
             }
         }
