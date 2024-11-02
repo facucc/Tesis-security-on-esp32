@@ -1,4 +1,5 @@
 idf_component_register(SRCS "src/main.c"
+                            "src/delta_ota.c"
                     INCLUDE_DIRS "include"
                     REQUIRES "coreMQTT-Agent"
                              "coreJSON"
@@ -7,5 +8,4 @@ idf_component_register(SRCS "src/main.c"
                              "iot-core-mqtt-file-downloader"
                              "queue_handler"
                              "app_update"
-                             "logging"
                     )
