@@ -38,16 +38,22 @@ FetchContent_Declare(
 FetchContent_Declare(
   jobs
   GIT_REPOSITORY https://github.com/aws/Jobs-for-AWS-IoT-embedded-sdk.git
-  GIT_TAG f00ec58991147520166106b732c883d2558db477
+  GIT_TAG 02e343e93e167dd8e8795e8e4f708ae1e07a2400
   SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/jobs) 
 
 FetchContent_Declare(
   iot-core-mqtt-file-downloader
   GIT_REPOSITORY https://github.com/aws/aws-iot-core-mqtt-file-streams-embedded-c.git
   GIT_TAG v1.0.0
-  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/iot-core-mqtt-file-downloader) 
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/iot-core-mqtt-file-downloader)
   
-FetchContent_MakeAvailable(coreMQTT-Agent backoffAlgorithm coreJSON tinycbor jobs iot-core-mqtt-file-downloader)
+FetchContent_Declare(
+  fleet-provisioning
+  GIT_REPOSITORY https://github.com/aws/Fleet-Provisioning-for-AWS-IoT-embedded-sdk
+  GIT_TAG v1.2.1
+  SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/fleet-provisioning) 
+  
+FetchContent_MakeAvailable(coreMQTT-Agent backoffAlgorithm coreJSON tinycbor jobs iot-core-mqtt-file-downloader fleet-provisioning)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(tesis)
