@@ -7,3 +7,12 @@ Libs
 signing
 managed_components
 .history
+Terraform/**/*.zip
+**/.terraform/*
+.terraform
+terraform.tfvars
+**/.terragrunt-cache/*
+.terragrunt-cache
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
