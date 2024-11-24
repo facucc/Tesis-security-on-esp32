@@ -1,0 +1,26 @@
+config OTA_AGENT_ENABLE
+	bool "Enable OTA Agent Task"
+	default n
+	help
+		Enable or disable the OTA Agent task in the project.
+
+if OTA_AGENT_ENABLE
+
+	config OTA_AGENT_TASK_NAME
+		string "OTA Agent Task Name"
+		default "ota_agent"
+		help
+			Define the name of the OTA Agent task.
+
+	config OTA_AGENT_STACK_SIZE
+		int "OTA Agent Stack Size"
+		default 6000
+		help
+			Define the stack size for the OTA Agent task.
+
+	config ENABLE_STACK_WATERMARK
+		bool "Enable stack watermark"
+		default true
+		help
+			Enable or disable stack watermark.
+endif

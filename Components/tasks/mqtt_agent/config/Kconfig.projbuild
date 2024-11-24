@@ -1,0 +1,31 @@
+config MQTT_AGENT_ENABLE
+	bool "Enable MQTT Agent Task"
+	default y
+	help
+		Enable or disable the MQTT Agent task in the project.
+
+if MQTT_AGENT_ENABLE
+
+	config MQTT_AGENT_TASK_NAME
+		string "MQTT Agent Task Name"
+		default "mqtt_agent"
+		help
+			Define the name of the MQTT Agent task.
+
+	config MQTT_AGENT_STACK_SIZE
+		int "MQTT Agent Stack Size"
+		default 8600
+		help
+			Define the stack size for the MQTT Agent task.
+
+	config CONNECTION_TEST
+		bool "Enable Connection Debug"
+		default n
+
+	config ENABLE_STACK_WATERMARK
+		bool "Enable stack watermark"
+		default true
+		help
+			Enable or disable stack watermark.
+
+endif
