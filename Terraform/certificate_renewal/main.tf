@@ -64,6 +64,14 @@ resource "aws_iot_topic_rule" "rule" {
   }
 }
 
+resource "aws_lambda_permission" "allow_iot_rules" {
+  statement_id  = var.rule_name
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.cert_renewal_lambda_function.function_name
+  principal     = "iot.amazonaws.com"
+  source_arn    = aws_iot_topic_rule.rule.arn
+}
+
 data "aws_iam_policy_document" "lambda_role" {
   statement {
     effect  = "Allow"
@@ -166,7 +174,7 @@ resource "aws_lambda_function" "cert_renewal_request_lambda_function" {
   environment {
     variables = {
       AWS_ACCOUNT_ID      = data.aws_caller_identity.current.account_id
-      JOB_DOCUMENT_SOURCE = var.bucket_name
+      JOB_DOCUMENT_SOURCE = "s3://${var.bucket_name}/jobDocument.json"
       environment         = var.environment
     }
   }
@@ -206,7 +214,8 @@ data "aws_iam_policy_document" "cert_renewal_request_iot_policy" {
       "iot:CreateJob"
     ]
     resources = [
-      "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:job/*"
+      "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:job/*",
+      "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:thinggroup/*"
     ]
   }
 
@@ -231,6 +240,7 @@ data "aws_iam_policy_document" "cert_renewal_request_iot_policy" {
     ]
   }
 }
+
 
 # Attach the custom IoT policy to the Lambda role
 resource "aws_iam_role_policy_attachment" "cert_renewal_request_iot_policy_attachment" {

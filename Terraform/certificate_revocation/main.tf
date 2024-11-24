@@ -64,6 +64,13 @@ resource "aws_iot_topic_rule" "rule" {
   }
 }
 
+resource "aws_lambda_permission" "allow_iot_rules" {
+  statement_id  = var.rule_name
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_function.function_name
+  principal     = "iot.amazonaws.com"
+  source_arn    = aws_iot_topic_rule.rule.arn
+}
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE AN IAM ROLE FOR THE CERTIFICATE REVOCATION LAMBDA FUNCTION
 # ---------------------------------------------------------------------------------------------------------------------

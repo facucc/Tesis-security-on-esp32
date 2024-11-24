@@ -126,7 +126,7 @@ resource "aws_iot_policy" "provisioning_policy" {
         ]
         Resource = [
           "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topic/$aws/certificates/create-from-csr/*",
-          "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topic/$aws/provisioning-templates/FleetProvisioningDev/provision/*"
+          "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topic/$aws/provisioning-templates/FleetProvisioning-${var.environment}/provision/*"
         ]
       },
       {
@@ -134,7 +134,7 @@ resource "aws_iot_policy" "provisioning_policy" {
         Action = "iot:Subscribe"
         Resource = [
           "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topicfilter/$aws/certificates/create-from-csr/*",
-          "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topicfilter/$aws/provisioning-templates/FleetProvisioningDev/provision/*"
+          "arn:aws:iot:${var.region}:${data.aws_caller_identity.current.account_id}:topicfilter/$aws/provisioning-templates/FleetProvisioning-${var.environment}/provision/*"
         ]
       }
     ]
