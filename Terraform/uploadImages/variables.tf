@@ -1,3 +1,9 @@
+variable "region" {
+  description = "The AWS region where resources will be created."
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "function_name" {
   type        = string
   description = "Name of the Lambda Function"
@@ -19,7 +25,7 @@ variable "runtime" {
 variable "handler" {
   description = "Handler for the Lambda function (e.g., your_module.lambda_handler)"
   type        = string
-  default     = "UploadImages.lambda_handler"
+  default     = "uploadImages.lambda_handler"
 }
 
 variable "architectures" {
@@ -57,7 +63,7 @@ variable "bucket_name" {
 variable "rule_name" {
   type        = string
   description = "A name for the aws iot rule"
-  default     = "RuleUploadImages"
+  default     = "UploadImages"
 }
 
 variable "time_zone" {
