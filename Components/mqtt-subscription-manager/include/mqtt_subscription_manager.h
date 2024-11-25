@@ -1,62 +1,22 @@
-/**
- * @file mqtt_subscription_manager.h
- * @brief Functions for managing MQTT subscriptions.
- */
 #ifndef MQTT_SUBSCRIPTION_MANAGER_H
 #define MQTT_SUBSCRIPTION_MANAGER_H
 
-/**************************************************/
-/******* DO NOT CHANGE the following order ********/
-/**************************************************/
-
-/* Logging related header files are required to be included in the following order:
- * 1. Include the header file "logging_levels.h".
- * 2. Define LIBRARY_LOG_NAME and  LIBRARY_LOG_LEVEL.
- * 3. Include the header file "logging_stack.h".
- */
-
-/* Include header that defines log levels. */
-// #include "logging_levels.h"
-
-// /* Logging configuration for the Subscription Manager module. */
-// #ifndef LIBRARY_LOG_NAME
-//     #define LIBRARY_LOG_NAME     "Subscription Manager"
-// #endif
-// #ifndef LIBRARY_LOG_LEVEL
-//     #define LIBRARY_LOG_LEVEL    LOG_ERROR
-// #endif
-
-//#include "logging.h"
-
-/* core MQTT include. */
 #include "core_mqtt.h"
 
-/**
- * @brief Maximum number of subscriptions maintained by the subscription manager
- * simultaneously in a list.
- */
+/* Maximum number of subscriptions maintained by the subscription manager simultaneously in a list. */
 #ifndef SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS
     #define SUBSCRIPTION_MANAGER_MAX_SUBSCRIPTIONS    4U
 #endif
 
-/**
- * @brief Callback function called when receiving a publish.
- *
- * @param[in] pvIncomingPublishCallbackContext The incoming publish callback context.
- * @param[in] pxPublishInfo Deserialized publish information.
- */
+/* Callback function called when receiving a publish. */
 typedef void (* IncomingPubCallback_t )( void * pvIncomingPublishCallbackContext,
                                          MQTTPublishInfo_t * pxPublishInfo );
 
-/**
- * @brief An element in the list of subscriptions.
- *
- * This subscription manager implementation expects that the array of the
- * subscription elements used for storing subscriptions to be initialized to 0.
- *
- * @note This implementation allows multiple tasks to subscribe to the same topic.
+/* 
+ * An element in the list of subscriptions.
+ * This implementation allows multiple tasks to subscribe to the same topic.
  * In this case, another element is added to the subscription list, differing
- * in the intended publish callback. Also note that the topic filters are not
+ * in the intended publish callback. The topic filters are not
  * copied in the subscription manager and hence the topic filter strings need to
  * stay in scope until unsubscribed.
  */
@@ -68,20 +28,11 @@ typedef struct subscriptionElement
     const char * pcSubscriptionFilterString;
 } SubscriptionElement_t;
 
-/**
- * @brief Add a subscription to the subscription list.
- *
- * @note Multiple tasks can be subscribed to the same topic with different
+/* Add a subscription to the subscription list.
+ * Multiple tasks can be subscribed to the same topic with different
  * context-callback pairs. However, a single context-callback pair may only be
  * associated to the same topic filter once.
- *
- * @param[in] pxSubscriptionList  The pointer to the subscription list array.
- * @param[in] pcTopicFilterString Topic filter string of subscription.
- * @param[in] usTopicFilterLength Length of topic filter string.
- * @param[in] pxIncomingPublishCallback Callback function for the subscription.
- * @param[in] pvIncomingPublishCallbackContext Context for the subscription callback.
- *
- * @return `true` if subscription added or exists, `false` if insufficient memory.
+ * Returns `true` if subscription added or exists, `false` if insufficient memory.
  */
 bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscriptionList,
                                           const char * pcTopicFilterString,
@@ -89,31 +40,19 @@ bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscription
                                           IncomingPubCallback_t pxIncomingPublishCallback,
                                           void * pvIncomingPublishCallbackContext );
 
-/**
- * @brief Remove a subscription from the subscription list.
- *
- * @note If the topic filter exists multiple times in the subscription list,
+/* Remove a subscription from the subscription list.
+ * If the topic filter exists multiple times in the subscription list,
  * then every instance of the subscription will be removed.
- *
- * @param[in] pxSubscriptionList  The pointer to the subscription list array.
- * @param[in] pcTopicFilterString Topic filter of subscription.
- * @param[in] usTopicFilterLength Length of topic filter.
  */
 void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscriptionList,
                                              const char * pcTopicFilterString,
                                              uint16_t usTopicFilterLength );
 
-/**
- * @brief Handle incoming publishes by invoking the callbacks registered
+/* Handle incoming publishes by invoking the callbacks registered
  * for the incoming publish's topic filter.
- *
- * @param[in] pxSubscriptionList  The pointer to the subscription list array.
- * @param[in] pxPublishInfo Info of incoming publish.
- *
- * @return `true` if an application callback could be invoked;
- *  `false` otherwise.
+ * Returns `true` if an application callback could be invoked; `false` otherwise.
  */
 bool SubscriptionManager_HandleIncomingPublishes( SubscriptionElement_t * pxSubscriptionList,
                                                   MQTTPublishInfo_t * pxPublishInfo );
 
-#endif /* MQTT_SUBSCRIPTION_MANAGER_H */
+#endif

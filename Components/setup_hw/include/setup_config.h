@@ -13,6 +13,7 @@
 #include "lwip/sys.h"
 
 #define ESP_MAXIMUM_RETRY  5
+#define WIFI_NAMESPACE "wifi"
 
 #define WIFI_CONNECTED_BIT BIT0 
 #define WIFI_FAIL_BIT      BIT1
@@ -21,8 +22,5 @@
 
 #define SSID_KEY "SSID"
 #define PASSPHRASE_KEY "Passphrase"
-
-static bool wifiConnected = false;
-static EventGroupHandle_t wifiEventGroup;
 
 void initHardware();

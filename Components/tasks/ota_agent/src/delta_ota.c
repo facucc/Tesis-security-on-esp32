@@ -41,7 +41,7 @@ bool ApplyPatch( esp_ota_context_t * ota_ctx)
         return 0;
     }
 
-    /* Set desitination partition context.*/
+    /* Set desitination partition context. */
     patchCtx.partition = ota_ctx->patch_partition;
     patchCtx.size = ota_ctx->data_write_len;
     patch_buffer = (unsigned char *)pvPortMalloc( PATCH_BUFFER_SIZE );
@@ -52,7 +52,7 @@ bool ApplyPatch( esp_ota_context_t * ota_ctx)
         return 0;
     }
 
-    /* Set target partition context.*/
+    /* Set target partition context. */
     targetCtx.partition = ota_ctx->update_partition;
     target_buffer = (unsigned char *)pvPortMalloc( PATCH_BUFFER_SIZE );
     if ( target_buffer == NULL )
@@ -78,7 +78,7 @@ bool ApplyPatch( esp_ota_context_t * ota_ctx)
         0
     };
 
-    /* Patch the base version.*/
+    /* Patch the base version. */
     xReturn = janpatch( jCtx, &sourceCtx, &patchCtx, &targetCtx );
     if( xReturn == 0 )
     {
@@ -101,7 +101,7 @@ static bool prvIsPatchFile( const char *pFilePath )
 
     if ( patchFileExt != NULL )
     { 
-        /* Check if the file is a patch file.*/
+        /* Check if the file is a patch file. */
         if ( !strncmp( patchFileExt, PATCH_FILE_EXTENSION , sizeof( PATCH_FILE_EXTENSION ) ) )
         {
             xReturn = true;
@@ -127,12 +127,12 @@ bool SetOTAUpdateContext( const char * filePath, esp_ota_context_t * ota_ctx)
 
     if ( prvIsPatchFile( filePath ) )
     {
-        /* Create a patch file.*/                
+        /* Create a patch file. */                
         xReturn = prvCreatePatchFile( ota_ctx );
     }
     else
     {
-        /* Create an ota file.*/
+        /* Create an ota file. */
         xReturn = prvCreateOtaFile( ota_ctx );
     }
 
@@ -173,14 +173,14 @@ static bool prvCreateOtaFile(esp_ota_context_t * ota_ctx)
     ESP_LOGI( TAG, "esp_ota_begin succeeded" );
     return true;
 }
-/* Create file for storing patch data.*/
+/* Create file for storing patch data. */
 static bool prvCreatePatchFile( esp_ota_context_t * ota_ctx )
 {
     bool xReturn = false;
 
     const esp_partition_t *patch_partition = NULL;
 
-    /* Find the OTA patch partiton.*/
+    /* Find the OTA patch partiton. */
     patch_partition = esp_partition_find_first( ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_NVS, PATCH_PARTITION_NAME );
 
     if( !prvCreateOtaFile( ota_ctx ))
@@ -193,10 +193,10 @@ static bool prvCreatePatchFile( esp_ota_context_t * ota_ctx )
     {
         ESP_LOGI( TAG, "Found %s partition.", PATCH_PARTITION_NAME );
 
-        /* Erase the partiton.*/
+        /* Erase the partiton. */
         esp_partition_erase_range( patch_partition, 0, patch_partition->size );        
 
-        /* Set ota context.*/
+        /* Set ota context. */
         ota_ctx->patch_partition   = patch_partition;
         ota_ctx->OtaPartition_type = OtaPatchPartition;
         ota_ctx->data_write_len    = 0;
@@ -215,7 +215,7 @@ static bool prvCreatePatchFile( esp_ota_context_t * ota_ctx )
     return xReturn;
 }
 
-/* Sets the offset for the partition to the value pointed to by offset.*/
+/* Sets the offset for the partition to the value pointed to by offset. */
 static int prvfseek( esp_partition_context_t *fileCtx, long int offset, int whence )
 {
     switch ( whence )
@@ -250,7 +250,7 @@ static int prvfseek( esp_partition_context_t *fileCtx, long int offset, int when
     return 0;
 }
 
-/* Read block of data from partition.*/
+/* Read block of data from partition. */
 static size_t prvfread( void *buffer, size_t size, size_t count, esp_partition_context_t *pCtx )
 {
     esp_err_t esp_ret = ESP_FAIL;
@@ -277,7 +277,7 @@ static size_t prvfread( void *buffer, size_t size, size_t count, esp_partition_c
     return ( size * count );
 }
 
-/* Write block of data to partition.*/
+/* Write block of data to partition. */
 static size_t prvfwrite( const void *buffer, size_t size, size_t count, esp_partition_context_t *pCtx )
 {
     esp_err_t esp_ret = ESP_FAIL;
@@ -297,13 +297,13 @@ static size_t prvfwrite( const void *buffer, size_t size, size_t count, esp_part
         return 0;
     }
 
-    /* Udpate offset.*/
+    /* Udpate offset. */
     pCtx->offset += ( size * count );
 
     return ( size * count );
 }
 
-/* Get current offset in partition.*/
+/* Get current offset in partition. */
 static long int prvftell( esp_partition_context_t *pCtx )
 {
     return pCtx->offset;

@@ -1,0 +1,26 @@
+config CERT_RENEWAL_AGENT_ENABLE
+    bool "Enable Certificate Renewal Agent Task"
+    default n
+    help
+        Enable or disable the Certificate Renewal Agent task in the project.
+
+if CERT_RENEWAL_AGENT_ENABLE
+
+    config CERT_RENEWAL_AGENT_TASK_NAME
+        string "Certificate Renewal Agent Task Name"
+        default "cert_renew_agent"
+        help
+            Define the name of the Certificate Renewal Agent task.
+
+    config CERT_RENEWAL_AGENT_STACK_SIZE
+        int "Certificate Renewal Agent Stack Size"
+        default 9000
+        help
+            Define the stack size for the Certificate Renewal Agent task.
+
+    config ENABLE_STACK_WATERMARK
+        bool "Enable stack watermark"
+        default true
+        help
+            Enable or disable stack watermark.
+endif

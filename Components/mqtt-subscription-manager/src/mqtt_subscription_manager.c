@@ -1,13 +1,6 @@
-/**
- * @file mqtt_subscription_manager.c
- * @brief Functions for managing MQTT subscriptions.
- */
-
-/* Standard includes. */
 #include <string.h>
 #include <stdio.h>
 
-/* Subscription manager header include. */
 #include "mqtt_subscription_manager.h"
 #include "esp_log.h"
 
@@ -74,8 +67,6 @@ bool SubscriptionManager_AddSubscription( SubscriptionElement_t * pxSubscription
     return xReturnStatus;
 }
 
-/*-----------------------------------------------------------*/
-
 void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscriptionList,
                                              const char * pcTopicFilterString,
                                              uint16_t usTopicFilterLength )
@@ -100,8 +91,6 @@ void SubscriptionManager_RemoveSubscription( SubscriptionElement_t * pxSubscript
         }
     }
 }
-
-/*-----------------------------------------------------------*/
 
 bool SubscriptionManager_HandleIncomingPublishes( SubscriptionElement_t * pxSubscriptionList,
                                                   MQTTPublishInfo_t * pxPublishInfo )

@@ -11,6 +11,9 @@ set(EXTRA_COMPONENT_DIRS Components
                          Components/tasks
   )
 
+add_compile_definitions(MQTT_STREAMS_DO_NOT_USE_CUSTOM_CONFIG)
+add_compile_definitions(FLEET_PROVISIONING_DO_NOT_USE_CUSTOM_CONFIG)
+
 set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/Libs")
 
 FetchContent_Declare(
@@ -44,7 +47,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   iot-core-mqtt-file-downloader
   GIT_REPOSITORY https://github.com/aws/aws-iot-core-mqtt-file-streams-embedded-c.git
-  GIT_TAG v1.0.0
+  GIT_TAG 690fb2bd10020da916fe54f3e8c59f1e3f925e44
   SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/iot-core-mqtt-file-downloader)
   
 FetchContent_Declare(

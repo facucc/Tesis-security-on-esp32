@@ -1,23 +1,21 @@
 #include "setup_config.h"
 #include "key_value_store.h"
 
-#define WIFI_NAMESPACE "wifi"
+static int retry_number = 0;
+
+static EventGroupHandle_t wifiEventGroup;
 
 static const char *TAG = "WIFI_STA";
 
-static int s_retry_num = 0;
-
-static void prvInitFlash( void );
-static void prvWifiInitSta( void );
-static bool prvStartWifi( void );
-
+static void prvInitFlash(void);
+static void prvWifiInitSta(void);
+static bool prvStartWifi(void);
 
 void initHardware()
 {
     prvInitFlash();
     prvWifiInitSta();
     prvStartWifi();
-
 }
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
@@ -34,7 +32,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
                 break;
             case WIFI_EVENT_STA_DISCONNECTED:
                 ESP_LOGI( TAG, "Station disconnected event" );
-                wifiConnected = false;
                 /*
                 while (1)
                 {
@@ -43,10 +40,10 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
                     vTaskDelay(pdMS_TO_TICKS(5000));
                 }
                 */
-                if (s_retry_num < ESP_MAXIMUM_RETRY)
+                if (retry_number < ESP_MAXIMUM_RETRY)
                 {
                     esp_wifi_connect();
-                    s_retry_num++;
+                    retry_number++;
                     vTaskDelay(pdMS_TO_TICKS(5000));
                     
                 } else {
@@ -57,7 +54,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
                 break;
             case WIFI_EVENT_STA_START:
                 ESP_LOGI( TAG, "Station started event" );
-                wifiConnected = false;
                 break;
             case WIFI_EVENT_SCAN_DONE:
                 ESP_LOGI( TAG, "WiFi scan completed event" );
@@ -78,7 +74,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
                 ESP_LOGI( TAG, "Station acquired IP address event" );
                 ESP_LOGI(TAG, "IP:" IPSTR, IP2STR(&event->ip_info.ip));
                 xEventGroupSetBits( wifiEventGroup, WIFI_CONNECTED_BIT );
-                wifiConnected = true;
                 break;
             default:
                 ESP_LOGE( TAG,
@@ -123,10 +118,7 @@ static void prvWifiInitSta( void )
 
     esp_netif_create_default_wifi_sta();
 
-
-
     ESP_ERROR_CHECK(esp_wifi_init(&initConfig));
-
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &instanceAnyId));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, &instanceGotIp));
@@ -142,22 +134,20 @@ static bool prvStartWifi( void )
 
     size_t ssidLength = 0;
     size_t passphraseLength = 0;
-    // Open the "wifi" namespace in read-only mode
     
     nvs_handle handle;
 
     ESP_ERROR_CHECK(nvs_open(WIFI_NAMESPACE, NVS_READONLY, &handle) != ESP_OK);
 
-    // Load the private key & certificate
     ESP_LOGI(TAG, "Loading wifi");
 
-    char * ssid       = load_value_from_nvs(handle, SSID_KEY, &ssidLength);
-    char * passphrase = load_value_from_nvs(handle, PASSPHRASE_KEY, &passphraseLength);
-    // We're done with NVS
+    char * ssid       = LoadValueFromNVS(handle, SSID_KEY, &ssidLength);
+    char * passphrase = LoadValueFromNVS(handle, PASSPHRASE_KEY, &passphraseLength);
+
     nvs_close(handle);
     
-    // Check if both items have been correctly retrieved
-    if(ssid == NULL || passphrase == NULL) {
+    if(ssid == NULL || passphrase == NULL)
+    {
         ESP_LOGE(TAG, "ssid or passphrase could not be loaded");
         return false;
     }
