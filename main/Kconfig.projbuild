@@ -1,0 +1,19 @@
+menu "Tasks Configuration"
+
+    menu "Application"
+        source "/home/facundo/Desktop/Tesis/Tesis-security-on-esp32/Components/tasks/application/config/Kconfig.projbuild"         
+    endmenu
+
+    menu "MQTT Agent"
+        source "/home/facundo/Desktop/Tesis/Tesis-security-on-esp32/Components/tasks/mqtt_agent/config/Kconfig.projbuild"
+    endmenu
+
+    menu "Certificate Renewal Agent"
+        source "/home/facundo/Desktop/Tesis/Tesis-security-on-esp32/Components/tasks/cert_renew_agent/config/Kconfig.projbuild"
+    endmenu
+
+    menu "OTA Agent"
+        source "/home/facundo/Desktop/Tesis/Tesis-security-on-esp32/Components/tasks/ota_agent/config/Kconfig.projbuild"
+    endmenu
+
+endmenu
