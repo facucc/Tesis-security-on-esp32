@@ -1,0 +1,43 @@
+config APP_ENABLE
+	bool "Enable Application Task"
+	default n
+	help
+		Enable or disable the Application task in the project.
+
+config APP_STACK_SIZE
+	int "Application Stack Size"
+	default 3000
+	help
+		Define the stack size for the Application task.
+
+config APP_TASK_NAME
+	string "application Task Name"
+	default "app"
+	help
+		Define the name of the application task.
+
+choice FRAMESIZE
+	bool "Select Frame Size"
+	default FRAMESIZE_VGA
+	help
+		Select Picture Frame Size.
+
+	config FRAMESIZE_VGA
+		bool "Frame Size:640x480"
+	config FRAMESIZE_SVGA
+		bool "Frame Size:800x600"
+	config FRAMESIZE_XGA
+		bool "Frame Size:1024x768"
+	config FRAMESIZE_HD
+		bool "Frame Size:1280x720"
+	config FRAMESIZE_SXGA
+		bool "Frame Size:1280x1024"
+	config FRAMESIZE_UXGA
+		bool "Frame Size:1600x1200"
+endchoice
+
+config ENABLE_STACK_WATERMARK
+	bool "Enable stack watermark"
+	default true
+	help
+		Enable or disable stack watermark.
