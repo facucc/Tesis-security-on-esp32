@@ -6,3 +6,5 @@ idf_component_register(
   PRIV_REQUIRES coreJSON tinycbor)
 
 component_compile_options(-Wno-error=format= -Wno-format)
+add_compile_definitions(MQTT_STREAMS_DO_NOT_USE_CUSTOM_CONFIG)
+

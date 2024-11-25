@@ -122,10 +122,8 @@ bool Agent_ReleaseCommand( MQTTAgentCommand_t * pCommandToRelease )
     {
         structReturned = Agent_MessageSend( &commandStructMessageCtx, &pCommandToRelease, 0U );
 
-        /* The send should not fail as the queue was created to hold every command
-         * in the pool. */
+        /* The send should not fail as the queue was created to hold every command in the pool. */
         configASSERT( structReturned );
-        //ESP_LOGI(TAG,"Returned Command Context %d to pool", ( int ) ( pCommandToRelease - commandStructurePool ));
     }
 
     return structReturned;
