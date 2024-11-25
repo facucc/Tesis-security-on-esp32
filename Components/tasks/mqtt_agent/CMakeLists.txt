@@ -1,4 +1,6 @@
 idf_component_register(SRCS "src/main.c"
+                            "src/mqtt_aws_credentials.c"
+                            "src/mqtt_connection.c"
                             "src/mqtt_common.c"
                             "src/mqtt_onboarding.c"
                     INCLUDE_DIRS "include"
